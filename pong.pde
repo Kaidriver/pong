@@ -396,7 +396,7 @@ void select() {
       scene = 6;
   }
 }
-void keyPressed() {
+void mousePressed() {
  
      if (mouseX < arrow1x + (arrow1w/2) && mouseX > arrow1x - (arrow1w/2) && mouseY < arrow1y + (arrow1h/2) && mouseY > arrow1y - (arrow1h/2)) {
          if (scorelimit > 0) {
