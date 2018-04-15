@@ -1,8 +1,9 @@
-
+ 
 ball ball = new ball(640, 360, 8, 0, 25,1);
 ball menub = new ball(600, 600, 20, 3, 25, 1);
 platform player1 = new platform(10, displayHeight/2, 20, 200);
 platform player2 = new platform(displayWidth-20, displayHeight/2, 20, 200);
+static final String CONFIG_FILE = "save.txt";
 boolean [] keys = new boolean[128]; 
 int p1score = 0;
 int p2score = 0;
@@ -28,20 +29,27 @@ float arrow2y = 530;
 int arrow2w = 75;
 int arrow2h = 75;
 int scorelimit = 5;
+int highscore = 1;
+boolean loop = true;
 float speedChange = 1.1;
- 
 int scene = 1;
+//PrintWriter output = createWriter("save.txt");
 public void setup() {
+
   orientation(LANDSCAPE);
+  frameRate(300);
   size(displayWidth, displayHeight);
   rectMode(CENTER);
   textSize(48);
   background(0);
   PFont font = loadFont("ShowcardGothic-Reg-48.vlw");
   textFont(font);
-  
+  requestPermission("android.permission.READ_EXTERNAL_STORAGE");
+  requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+  loadData();
 }
 public void draw() {
+   saveData();
   if (scene == 1) {
     reset();
     menu();
@@ -96,6 +104,7 @@ public void draw() {
     textSize(60);
     text("GAMEOVER!", displayWidth/2, displayHeight/2*.5);
     text("YOUR SCORE: " + soloscore, displayWidth/2, displayHeight/2);
+     text("HIGH SCORE: " + highscore, displayWidth/2, displayHeight/2*1.25);
     fill(0);
     stroke(255);
     rect(button3x, button3y, button3w, button3h);
@@ -156,26 +165,31 @@ public void menu() {
    } else if (menub.x + (menub.size/2) > width || menub.x-(menub.size/2) < 0) {
      menub.dx*= -1;
    }
-  textAlign(CENTER);
-  textSize(128);
-  text("PONG", displayWidth/2, displayHeight/2*.5f);
-  fill(0);
-  stroke(255);
-  rect(button1x, button1y, button1w, button1h);
-  fill(255);
-  textSize(48);
-  text("Play against ai", button1x, button1y);
-  fill(0);
-  stroke(255);
-  rect(button2x, button2y, button2w, button2h);
-  fill(255);
-  textSize(48);
-  text("Play solo", button2x, button2y);
+ 
+    textAlign(CENTER);
+    textSize(128);
+    text("PONG", displayWidth/2, displayHeight/2*.5f);
+    fill(0);
+    stroke(255);
+    rect(button1x, button1y, button1w, button1h);
+    fill(255);
+    textSize(48);
+    text("Play against ai", button1x, button1y);
+    fill(0);
+    stroke(255);
+    rect(button2x, button2y, button2w, button2h);
+    fill(255);
+    textSize(48);
+    text("Play solo", button2x, button2y);
 
 }
 public void gameOver() {
   if (ball.x +(ball.size/2) < 0 || ball.x - (ball.size/2) > displayWidth) {
     scene = 0;
+    if (soloscore > highscore) {
+      highscore = soloscore;
+     
+    }
   }
 }
 public void reset() {
@@ -397,7 +411,6 @@ void select() {
   }
 }
 void mousePressed() {
- 
      if (mouseX < arrow1x + (arrow1w/2) && mouseX > arrow1x - (arrow1w/2) && mouseY < arrow1y + (arrow1h/2) && mouseY > arrow1y - (arrow1h/2)) {
          if (scorelimit > 0) {
             scorelimit -= 1; 
@@ -406,7 +419,17 @@ void mousePressed() {
       else if (mouseX < arrow2x + (arrow2w/2) && mouseX > arrow2x - (arrow2w/2) && mouseY < arrow2y + (arrow2h/2) && mouseY > arrow2y - (arrow2h/2)) {
         scorelimit += 1;    
       }  
- 
+}
+void loadData() {
+  String[] lines = loadStrings(CONFIG_FILE);
+  
+  highscore = int(lines[0]);
  
 }
-  
+ 
+void saveData() {
+  String[] lines = {str(highscore)};
+   
+  saveStrings(dataFile(CONFIG_FILE), lines);
+    
+}
