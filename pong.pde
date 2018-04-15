@@ -1,6 +1,10 @@
- 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.content.Context;
+import android.app.Activity;
+import android.view.MotionEvent; 
 ball ball = new ball(640, 360, 8, 0, 25,1);
-ball menub = new ball(600, 600, 20, 3, 25, 1);
+ball menub = new ball(600, 600, 20, 3,25, 1);
 platform player1 = new platform(10, displayHeight/2, 20, 200);
 platform player2 = new platform(displayWidth-20, displayHeight/2, 20, 200);
 static final String CONFIG_FILE = "save.txt";
@@ -30,6 +34,7 @@ int arrow2w = 75;
 int arrow2h = 75;
 int scorelimit = 5;
 int highscore = 1;
+ 
 boolean loop = true;
 float speedChange = 1.1;
 int scene = 1;
@@ -88,16 +93,11 @@ public void draw() {
     ball.display();
     player1.display();
     player2.display();
-     
-    if (mouseX> displayWidth/2) {
-        player2.x = mouseX;
-        player2.y = mouseY;
-        player1.x = mouseX;
-        player1.y = mouseY;
-    }
+    ball.move();
+    
     platBoundary();
     collisions();
-    ball.move();
+    
     gameOver();
   } else if (scene == 0) {
     background(0);
@@ -420,16 +420,38 @@ void mousePressed() {
         scorelimit += 1;    
       }  
 }
-void loadData() {
-  String[] lines = loadStrings(CONFIG_FILE);
-  
-  highscore = int(lines[0]);
  
-}
  
 void saveData() {
-  String[] lines = {str(highscore)};
-   
-  saveStrings(dataFile(CONFIG_FILE), lines);
+  SharedPreferences sharedPreferences;
+  SharedPreferences.Editor editor;
+  Activity act;
+  act = this.getActivity();
+  sharedPreferences = PreferenceManager.getDefaultSharedPreferences(act.getApplicationContext()); 
+  editor = sharedPreferences.edit();
+  editor.putInt("Highscore", highscore);
+  editor.commit();
+}
+void loadData() {
+  SharedPreferences sharedPreferences;
+  Activity act;
+  act = this.getActivity();
+  sharedPreferences = PreferenceManager.getDefaultSharedPreferences(act.getApplicationContext()); 
+  highscore = sharedPreferences.getInt("Highscore", highscore);
+}
+public boolean surfaceTouchEvent(MotionEvent me) {
+  int numTouches = me.getPointerCount();
+  for (int i=0; i < numTouches; i++) {
+     int pointerId = me.getPointerId(i);
+      
+     if (me.getX(i) < displayWidth/2) {
+ 
+       player1.y = me.getY(i);
+     } else if (me.getX(i) > displayWidth/2) {
     
+       player2.y = me.getY(i);
+     }
+    }
+ 
+  return super.surfaceTouchEvent(me);
 }

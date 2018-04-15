@@ -1,5 +1,5 @@
 public class platform {
-   private int x, y, w, h;
+   private float x, y, w, h;
    private color platColor = color(255,255,255);
    public platform(int x, int y, int w, int h) {
     this.x = x;
