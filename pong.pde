@@ -18,12 +18,16 @@ float button2x = 1225;
 float button2y = 500;
 float button3x = 880;
 float button3y = 750;
+float button4x = 575;
+float button4y = 800;
 int button1w = 550;
 int button1h = 150;
 int button2w = 550;
 int button2h = 150;
 int button3w = 550;
 int button3h = 150;
+int button4w = 550;
+int button4h = 150;
 float arrow1x = 1250;
 float arrow1y = 530;
 int arrow1w = 75;
@@ -63,6 +67,8 @@ public void draw() {
     }
     else if (mouseX < button2x + (button2w/2) && mouseX > button2x - (button2w/2) && mouseY < button2y + (button2h/2) && mouseY > button2y - (button2h/2)) {
       scene = 3;
+    }  else if (mouseX < button4x + (button4w/2) && mouseX > button4x - (button4w/2) && mouseY < button4y + (button4h/2) && mouseY > button4y - (button4h/2)) {
+      scene = 7;
     }
   }
   else if (scene == 2) {
@@ -93,6 +99,8 @@ public void draw() {
     ball.display();
     player1.display();
     player2.display();
+    player1.x = player2.x;
+    player1.y = player2.y;
     ball.move();
     
     platBoundary();
@@ -130,8 +138,24 @@ public void draw() {
     text("Main Menu", button3x, button3y);
     if (mouseX < button3x + (button3w/2) && mouseX > button3x - (button3w/2) && mouseY < button3y + (button3h/2) && mouseY > button3y - (button3h/2)) {
       scene = 1;
+    } 
+  } else if (scene == 7) {
+      select();
+    
+    } else if (scene == 8) {
+      background(0);
+      text(p1score, displayWidth/10*9, 30);
+      text(p2score, displayWidth/10, 30);
+      ball.display();
+      player1.display();
+      player2.display();
+      ball.move();
+      
+      platBoundary();
+      collisions();
+      
+      win();
     }
-  }
 }
 public void win () {
   if (ball.x < 0) {
@@ -181,6 +205,12 @@ public void menu() {
     fill(255);
     textSize(48);
     text("Play solo", button2x, button2y);
+    fill(0);
+    stroke(255);
+    rect(button4x, button4y, button4w, button4h);
+    fill(255);
+    textSize(48);
+    text("Two Player", button4x, button4y);
 
 }
 public void gameOver() {
@@ -406,8 +436,14 @@ void select() {
   fill(255);
   textSize(48);
   text("Play", button3x, button3y);
+   
   if (mouseX < button3x + (button3w/2) && mouseX > button3x - (button3w/2) && mouseY < button3y + (button3h/2) && mouseY > button3y - (button3h/2)) {
+    if (scene == 7) {
+      scene = 8;
+    } else {
       scene = 6;
+    }
+  
   }
 }
 void mousePressed() {
@@ -439,19 +475,27 @@ void loadData() {
   sharedPreferences = PreferenceManager.getDefaultSharedPreferences(act.getApplicationContext()); 
   highscore = sharedPreferences.getInt("Highscore", highscore);
 }
+
 public boolean surfaceTouchEvent(MotionEvent me) {
   int numTouches = me.getPointerCount();
-  for (int i=0; i < numTouches; i++) {
+  for (int i=0; i < numTouches; i++) { 
      int pointerId = me.getPointerId(i);
+     if (scene == 3) {
+       if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200) {
+         player2.y = me.getY(i);
+         
+       }
       
-     if (me.getX(i) < displayWidth/2) {
- 
-       player1.y = me.getY(i);
-     } else if (me.getX(i) > displayWidth/2) {
-    
-       player2.y = me.getY(i);
-     }
+     } else {
+       if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200) {
+   
+         player1.y = me.getY(i);
+       } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200) {
+      
+         player2.y = me.getY(i);
+       }
     }
- 
+  }
   return super.surfaceTouchEvent(me);
+  
 }
