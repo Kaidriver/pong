@@ -80,12 +80,6 @@ public void draw() {
     ball.display();
     player1.display();
     player2.display();
-     
-    if (mouseX> displayWidth/2) {
-        player2.x = mouseX;
-        player2.y = mouseY;
-  
-    }
     aiMovement();
     platBoundary();
     collisions();
@@ -125,11 +119,20 @@ public void draw() {
   } else if (scene == 4) {
     background(0);
     textSize(60);
-    if (p1score > p2score) {
+    if (scene == 3) {
+      if (p1score > p2score) {
       text("YOU LOST!", displayWidth/2, displayHeight/2*.5);
-    } else  {
-      text("YOUR WON!", displayWidth/2, displayHeight/2);
+      } else  {
+      text("YOU WON!", displayWidth/2, displayHeight/2);
+      }
+    } else {
+      if (p1score > p2score) {
+      text("Player 1 Won!", displayWidth/2, displayHeight/2*.5);
+      } else  {
+      text("Player 2 Won!", displayWidth/2, displayHeight/2);
+      }
     }
+    
     fill(0);
     stroke(255);
     rect(button3x, button3y, button3w, button3h);
@@ -142,10 +145,10 @@ public void draw() {
   } else if (scene == 7) {
       select();
     
-    } else if (scene == 8) {
+  } else if (scene == 8) {
       background(0);
-      text(p1score, displayWidth/10*9, 30);
-      text(p2score, displayWidth/10, 30);
+      text(p1score, displayWidth/10, 30);
+      text(p2score, displayWidth/10*9, 30);
       ball.display();
       player1.display();
       player2.display();
@@ -155,7 +158,7 @@ public void draw() {
       collisions();
       
       win();
-    }
+   }
 }
 public void win () {
   if (ball.x < 0) {
@@ -499,3 +502,4 @@ public boolean surfaceTouchEvent(MotionEvent me) {
   return super.surfaceTouchEvent(me);
   
 }
+ 
