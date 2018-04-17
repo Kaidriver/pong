@@ -9,6 +9,7 @@ platform player1 = new platform(10, displayHeight/2, 20, 200);
 platform player2 = new platform(displayWidth-20, displayHeight/2, 20, 200);
 static final String CONFIG_FILE = "save.txt";
 boolean [] keys = new boolean[128]; 
+ArrayList <powerUp> powerups = new ArrayList <powerUp> ();
 int p1score = 0;
 int p2score = 0;
 int soloscore = 0;
@@ -38,7 +39,7 @@ int arrow2w = 75;
 int arrow2h = 75;
 int scorelimit = 5;
 int highscore = 1;
- 
+float px, py;
 boolean loop = true;
 float speedChange = 1.1;
 int scene = 1;
@@ -80,9 +81,10 @@ public void draw() {
     ball.display();
     player1.display();
     player2.display();
+   
     aiMovement();
     platBoundary();
-    collisions();
+    ball.collisions();
     ball.move();
     win();
   }
@@ -96,9 +98,20 @@ public void draw() {
     player1.x = player2.x;
     player1.y = player2.y;
     ball.move();
-    
     platBoundary();
-    collisions();
+    ball.collisions();
+    powerup();
+    for (int i = 0; i < powerups.size(); i++) {
+      powerUp powerup = powerups.get(i);
+      powerup.display();
+       if (powerup.x == ball.x && powerup.y == ball.y) {
+         fill(255);
+         text("YESSSSSSSSS", 800, 800);
+         ball.dx *= 0;  
+         ball.dy *= 0;
+         powerups.remove(i);
+       }
+    }
     
     gameOver();
   } else if (scene == 0) {
@@ -155,7 +168,7 @@ public void draw() {
       ball.move();
       
       platBoundary();
-      collisions();
+      ball.collisions();
       
       win();
    }
@@ -230,6 +243,7 @@ public void reset() {
   ball.y = int(random(20, displayHeight-20));
   ball.dx = int(random(8,12));
   ball.dy = int(random(-2,2));
+  powerups.clear();
   ball.speed = 1;
   speedChange = 1.1;
   player1.y = displayHeight/2;
@@ -241,168 +255,7 @@ public void reset() {
     p2score = 0;
   }
 }
-public void collisions() {
-   if(ball.y + (ball.size/2) > height || ball.y-(ball.size/2) < 0) {
-      ball.dy*= -1;
-    }
-    if (ball.x - ball.size/2 <= player1.x + player1.w/2 && ball.x - ball.size/2 >= player1.x - player1.w/2 && (ball.y + ball.size/2 > player1.y - player1.h/2 && ball.y - ball.size/2 < player1.y - player1.h/8*3)) { 
-      if (ball.dx < 0) {
-        ball.dx*= -1;
-      }
-      if (ball.dy < 0) {
-         ball.dy = -12;
-      } else {
-         ball.dy = 12;
-      }  
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x - ball.size/2 <= player1.x + player1.w/2 && ball.x - ball.size/2 >= player1.x - player1.w/2 && (ball.y + ball.size/2 > player1.y - player1.h/8*3 && ball.y - ball.size/2 < player1.y - player1.h/8*2)) {  
-      if (ball.dx < 0) {
-        ball.dx*= -1;
-      }
-     if (ball.dy < 0) {
-         ball.dy = -8;
-      } else {
-         ball.dy = 8;
-      } 
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x - ball.size/2 <= player1.x + player1.w/2 && ball.x - ball.size/2 >= player1.x - player1.w/2 && (ball.y + ball.size/2 > player1.y - player1.h/8*2 && ball.y - ball.size/2 < player1.y - player1.h/8)) {
-      if (ball.dx < 0) {
-        ball.dx*= -1;
-      }
-      if (ball.dy < 0) {
-         ball.dy = -4;
-      } else {
-         ball.dy = 4;
-      }
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x - ball.size/2 <= player1.x + player1.w/2 && ball.x - ball.size/2 >= player1.x - player1.w/2 && (ball.y + ball.size/2 > player1.y - player1.h/8 && ball.y - ball.size/2 < player1.y + player1.h/8)) {
-      if (ball.dx < 0) {
-        ball.dx*= -1;
-      }
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x - ball.size/2 <= player1.x + player1.w/2 && ball.x - ball.size/2 >= player1.x - player1.w/2 && (ball.y + ball.size/2 > player1.y + player1.h/8 && ball.y - ball.size/2 < player1.y + player1.h/8*2)) {
-      if (ball.dx < 0) {
-        ball.dx*= -1;
-      }
-     if (ball.dy < 0) {
-         ball.dy = -4;
-      } else {
-         ball.dy = 4;
-      }   
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x - ball.size/2 <= player1.x + player1.w/2 && ball.x - ball.size/2 >= player1.x - player1.w/2 && (ball.y + ball.size/2 > player1.y + player1.h/8*2 && ball.y - ball.size/2 < player1.y + player1.h/8*3)) {
-      if (ball.dx < 0) {
-        ball.dx*= -1;
-      }
-      if (ball.dy < 0) {
-         ball.dy = -8;
-      } else {
-         ball.dy = 8;
-      } 
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x - ball.size/2 <= player1.x + player1.w/2 && ball.x - ball.size/2 >= player1.x - player1.w/2 && (ball.y + ball.size/2 > player1.y + player1.h/8*3 && ball.y - ball.size/2 < player1.y + player1.h/2)) {
-      if (ball.dx < 0) {
-        ball.dx*= -1;
-      }
-      if (ball.dy < 0) {
-         ball.dy = -12;
-      } else {
-         ball.dy = 12;
-      }   
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } 
-    if (ball.x + (ball.size/2) >= player2.x-player2.w/2 &&  ball.x <= player2.x + player2.w/2 && (ball.y + ball.size/2 > player2.y - player2.h/2 && ball.y - ball.size/2 < player2.y - player2.h/8*3)) {
-      if (ball.dx > 0) {
-        ball.dx*= -1;
-      }
-      if (ball.dy < 0) {
-         ball.dy = -12;
-      } else {
-         ball.dy = 12;
-      }  
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x + (ball.size/2) >= player2.x-player2.w/2 &&  ball.x <= player2.x + player2.w/2 && (ball.y + ball.size/2 > player2.y - player2.h/8*3 && ball.y - ball.size/2 < player2.y - player2.h/8*2)) {
-      if (ball.dx > 0) {
-        ball.dx*= -1;
-      }
-      if (ball.dy < 0) {
-         ball.dy = -8;
-      } else {
-         ball.dy = 8;
-      }  
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x + (ball.size/2) >= player2.x-player2.w/2 &&  ball.x <= player2.x + player2.w/2 && (ball.y + ball.size/2 > player2.y - player2.h/8 && ball.y - ball.size/2 < player2.y + player2.h/8)) {
-      if (ball.dx > 0) {
-        ball.dx*= -1;
-      }
-    
-      if (ball.dy < 0) {
-         ball.dy = -4;
-      } else {
-         ball.dy = 4;
-      }  
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x + (ball.size/2) >= player2.x-player2.w/2 &&  ball.x <= player2.x + player2.w/2 && (ball.y + ball.size/2 > player2.y - player2.h/8 && ball.y - ball.size/2 < player2.y + player2.h/8)) {
-      if (ball.dx > 0) {
-        ball.dx*= -1;
-      }
-      if (ball.dy < 0) {
-         ball.dy = -1;
-      } else {
-         ball.dy = 1;
-      }  
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x + (ball.size/2) >= player2.x-player2.w/2 &&  ball.x <= player2.x + player2.w/2 && (ball.y + ball.size/2 > player2.y + player2.h/8 && ball.y - ball.size/2 < player2.y + player2.h/8*2)) {
-      if (ball.dx > 0) {
-        ball.dx*= -1;
-      }
-    
-      if (ball.dy < 0) {
-         ball.dy = -4;
-      } else {
-         ball.dy = 4;
-      }    
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x + (ball.size/2) >= player2.x-player2.w/2 &&  ball.x <= player2.x + player2.w/2 && (ball.y + ball.size/2 > player2.y + player2.h/8*2 && ball.y - ball.size/2 < player2.y + player2.h/8*3)) {
-      if (ball.dx > 0) {
-        ball.dx*= -1;
-      }
-    
-      if (ball.dy < 0) {
-         ball.dy = -8;
-      } else {
-         ball.dy = 8;
-      }    
-      ball.speed *= speedChange;
-      soloscore += 1;
-    } else if (ball.x + (ball.size/2) >= player2.x-player2.w/2 &&  ball.x <= player2.x + player2.w/2 && (ball.y + ball.size/2 > player2.y - player2.h/8*3 && ball.y - ball.size/2 < player2.y + player2.h/2)) {
-      if (ball.dx > 0) {
-        ball.dx*= -1;
-      }
-    
-     if (ball.dy < 0) {
-         ball.dy = -12;
-      } else {
-         ball.dy = 12;
-      }   
-      ball.speed *= speedChange;
-      soloscore += 1;
-    }
-     
-  
-}
+ 
 public void aiMovement() {
   if (player1.y > ball.y) {
       player1.y -= 10;
@@ -502,4 +355,15 @@ public boolean surfaceTouchEvent(MotionEvent me) {
   return super.surfaceTouchEvent(me);
   
 }
- 
+void powerup() {
+  
+  if (millis()%500 == 0) {
+     
+    int prob = int(random(2));
+    if (prob == 1) {
+      px = random(200, 1000);
+      py = random (200, 600);
+      powerups.add(new powerUp(px, py, 75,75));
+    }
+  }
+}
