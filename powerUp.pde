@@ -10,14 +10,14 @@ public class powerUp {
    }
    public void display () {
      fill(this.platColor);
-     rect(x, y, w, h);
+     image(slowdown, x, y, w, h);
    }
    public boolean collisions () {
-     if (x == ball.x && y == ball.y) {
+     if (ball.x < x + (w/2) && ball.x > x - (w/2) && ball.y < y + (h/2) && ball.y > y - (h/2)) {
        fill(255);
-       text("YESSSSSSSSS", 800, 800);
-       ball.dx *= 0;  
-       ball.dy *= 0;
+       
+       ball.dx *= .5;  
+       ball.dy *= .5;
        return true;
      } else {
        return false;

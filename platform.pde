@@ -12,19 +12,14 @@ public class platform {
      fill(this.platColor);
      rect(x, y, w, h);
    }
-   public boolean collisionTop() {
-     if (y + (h*1.1) > height) {
-       return true;
-     } else {
-       return false;
+   public void bounds() {
+     if (y-h/2 <0) {
+       y = h/2;
+     }else if (y+h/2 > height) {
+       y = height - h/2;
      }
+        
    }
-   public boolean collisionB() {
-     if (y - (h/10) < 0) {
-       return true;
-     } else {
-       return false;
-     }
-   }
+  
 
 }

@@ -43,6 +43,7 @@ float px, py;
 boolean loop = true;
 float speedChange = 1.1;
 int scene = 1;
+PImage slowdown;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
@@ -54,6 +55,7 @@ public void setup() {
   background(0);
   PFont font = loadFont("ShowcardGothic-Reg-48.vlw");
   textFont(font);
+  slowdown = loadImage("slowdown.png");
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
   loadData();
@@ -81,9 +83,11 @@ public void draw() {
     ball.display();
     player1.display();
     player2.display();
-   
+    player1.bounds();
+    player2.bounds();
     aiMovement();
     platBoundary();
+    
     ball.collisions();
     ball.move();
     win();
@@ -95,6 +99,8 @@ public void draw() {
     ball.display();
     player1.display();
     player2.display();
+    player1.bounds();
+    player2.bounds();
     player1.x = player2.x;
     player1.y = player2.y;
     ball.move();
@@ -104,13 +110,9 @@ public void draw() {
     for (int i = 0; i < powerups.size(); i++) {
       powerUp powerup = powerups.get(i);
       powerup.display();
-       if (powerup.x == ball.x && powerup.y == ball.y) {
-         fill(255);
-         text("YESSSSSSSSS", 800, 800);
-         ball.dx *= 0;  
-         ball.dy *= 0;
-         powerups.remove(i);
-       }
+      if (powerup.collisions()) {
+        powerups.remove(i);
+      }
     }
     
     gameOver();
@@ -165,6 +167,8 @@ public void draw() {
       ball.display();
       player1.display();
       player2.display();
+      player1.bounds();
+      player2.bounds();
       ball.move();
       
       platBoundary();
@@ -363,7 +367,7 @@ void powerup() {
     if (prob == 1) {
       px = random(200, 1000);
       py = random (200, 600);
-      powerups.add(new powerUp(px, py, 75,75));
+      powerups.add(new powerUp(px, py, 80, 80));
     }
   }
 }
