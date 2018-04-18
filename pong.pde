@@ -57,7 +57,7 @@ public void setup() {
   PFont font = loadFont("ShowcardGothic-Reg-48.vlw");
   textFont(font);
    
-  slowdown = loadImage("slowdown.png");
+  slowdown = loadImage("slowdown2.png");
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
   loadData();
