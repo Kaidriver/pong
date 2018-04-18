@@ -3,13 +3,14 @@ import android.preference.PreferenceManager;
 import android.content.Context;
 import android.app.Activity;
 import android.view.MotionEvent; 
-ball ball = new ball(640, 360, 8, 0, 25,1);
+ 
 ball menub = new ball(600, 600, 20, 3,25, 1);
 platform player1 = new platform(10, displayHeight/2, 20, 200);
 platform player2 = new platform(displayWidth-20, displayHeight/2, 20, 200);
 static final String CONFIG_FILE = "save.txt";
 boolean [] keys = new boolean[128]; 
 ArrayList <powerUp> powerups = new ArrayList <powerUp> ();
+ArrayList <ball> balls = new ArrayList <ball> ();
 int p1score = 0;
 int p2score = 0;
 int soloscore = 0;
@@ -55,6 +56,7 @@ public void setup() {
   background(0);
   PFont font = loadFont("ShowcardGothic-Reg-48.vlw");
   textFont(font);
+   
   slowdown = loadImage("slowdown.png");
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
@@ -80,32 +82,43 @@ public void draw() {
     background(0);
     text(p1score, displayWidth/10, 30);
     text(p2score, displayWidth/10*9, 30);
-    ball.display();
+    for (int i = 0; i < balls.size(); i++) {
+      ball ballz = balls.get(i);
+      ballz.display();
+      ballz.collisions();
+      ballz.move();
+      ballz.win();
+    }
+    
     player1.display();
     player2.display();
     player1.bounds();
     player2.bounds();
-    aiMovement();
+ //   aiMovement();
     platBoundary();
     
-    ball.collisions();
-    ball.move();
-    win();
+    
+ 
+ 
   }
   else if (scene == 3) {
     background(0);
     text(soloscore, displayWidth/2, 30);
- 
-    ball.display();
+    for (int i = 0; i < balls.size(); i++) {
+        ball ballz = balls.get(i);
+        ballz.display();
+        ballz.collisions();
+        ballz.move();
+        ballz.gameover();
+    }
     player1.display();
     player2.display();
     player1.bounds();
     player2.bounds();
-    player1.x = player2.x;
+ 
     player1.y = player2.y;
-    ball.move();
     platBoundary();
-    ball.collisions();
+  
     powerup();
     for (int i = 0; i < powerups.size(); i++) {
       powerUp powerup = powerups.get(i);
@@ -115,7 +128,7 @@ public void draw() {
       }
     }
     
-    gameOver();
+   
   } else if (scene == 0) {
     background(0);
     textSize(60);
@@ -164,41 +177,25 @@ public void draw() {
       background(0);
       text(p1score, displayWidth/10, 30);
       text(p2score, displayWidth/10*9, 30);
-      ball.display();
+  
       player1.display();
       player2.display();
       player1.bounds();
       player2.bounds();
-      ball.move();
+      for (int i = 0; i < balls.size(); i++) {
+        ball ballz = balls.get(i);
+        ballz.display();
+        ballz.collisions();
+        ballz.move();
+        ballz.win();
+      }
       
       platBoundary();
-      ball.collisions();
-      
-      win();
+    
+ 
    }
 }
-public void win () {
-  if (ball.x < 0) {
-    p2score += 1;
-    reset();
-    int prob = PApplet.parseInt(random(2));
-    if (prob == 0) {
-     ball.dx *= -1;
-    } 
-    delay(500);
-  } else if (ball.x > width){
-    p1score += 1;
-    reset();
-    int prob = PApplet.parseInt(random(2));
-    if (prob == 0) {
-      ball.dx *= -1;
-    } 
-    delay(500);
-  }
-  if (p1score == scorelimit || p2score == scorelimit) {
-    scene = 4;
-  }
-}
+ 
 public void menu() {
   background(0);
   menub.display();
@@ -233,22 +230,11 @@ public void menu() {
     text("Two Player", button4x, button4y);
 
 }
-public void gameOver() {
-  if (ball.x +(ball.size/2) < 0 || ball.x - (ball.size/2) > displayWidth) {
-    scene = 0;
-    if (soloscore > highscore) {
-      highscore = soloscore;
-     
-    }
-  }
-}
+ 
 public void reset() {
-  ball.x = 640;
-  ball.y = int(random(20, displayHeight-20));
-  ball.dx = int(random(8,12));
-  ball.dy = int(random(-2,2));
+  balls.clear();
+  balls.add(new ball(900, 360, 8, 0, 25,1));
   powerups.clear();
-  ball.speed = 1;
   speedChange = 1.1;
   player1.y = displayHeight/2;
   player2.y = displayHeight/2;
@@ -260,13 +246,13 @@ public void reset() {
   }
 }
  
-public void aiMovement() {
+/*public void aiMovement() {
   if (player1.y > ball.y) {
       player1.y -= 10;
   } else if (player1.y < ball.y){
       player1.y += 10;
   }
-}
+}*/
 public void platBoundary() {
   if (player1.x < 10 || player1.x > 10) {
       player1.x = 10;
@@ -363,11 +349,15 @@ void powerup() {
   
   if (millis()%500 == 0) {
      
-    int prob = int(random(2));
+    int prob = int(random(4));
     if (prob == 1) {
       px = random(200, 1000);
       py = random (200, 600);
-      powerups.add(new powerUp(px, py, 80, 80));
+      powerups.add(new powerUp(px, py, 80, 80, 1));
+    } else if (prob == 2) {
+      px = random(200, 1000);
+      py = random (200, 600);
+      powerups.add(new powerUp(px, py, 80, 80, 2));
     }
   }
 }

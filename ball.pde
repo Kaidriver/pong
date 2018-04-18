@@ -1,8 +1,8 @@
 public class ball {
-  private int x, y, dx, dy, size;
+  private float x, y, dx, dy, size;
   private float speed;
   private color ballColor = color(255, 255, 255);
-  public ball(int x, int y, int dx, int dy, int size, float speed) {
+  public ball(float x, float y, int dx, int dy, int size, float speed) {
     this.x = x;
     this.y = y;
     this.dx = dx;
@@ -182,6 +182,36 @@ public class ball {
       }   
       speed *= speedChange;
       soloscore += 1;
+    }
+  }
+  public void win () {
+    if (x < 0) {
+      p2score += 1;
+      reset();
+      int prob = PApplet.parseInt(random(2));
+      if (prob == 0) {
+       dx *= -1;
+      } 
+      delay(500);
+    } else if (x > width){
+      p1score += 1;
+      reset();
+      int prob = PApplet.parseInt(random(2));
+      if (prob == 0) {
+        dx *= -1;
+      } 
+      delay(500);
+    }
+    if (p1score == scorelimit || p2score == scorelimit) {
+      scene = 4;
+    }
+  }
+  public void gameover() {
+    if (x +(size/2) < 0 || x - (size/2) > displayWidth) {
+        scene = 0;
+    }
+    if (soloscore > highscore) {
+      highscore = soloscore;
     }
   }
    
