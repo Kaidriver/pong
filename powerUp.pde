@@ -1,14 +1,10 @@
 public class powerUp {
   
    private float x, y, w, h;
-<<<<<<< HEAD
+ 
    private int type;
    private color platColor = color(255,255,255);
    public powerUp(float x, float y, float w, float h, int type) {
-=======
-   
-   public powerUp(float x, float y, float w, float h) {
->>>>>>> 12b464fd519d1f3c33c380bbb42ab17745f44e99
     this.x = x;
     this.y = y;
     this.w = w;
@@ -17,7 +13,7 @@ public class powerUp {
    }
    
    public void display () {
-<<<<<<< HEAD
+ 
      fill(this.platColor);
      if (type == 1) {
        image(slowdown, x, y, w, h);
@@ -26,10 +22,10 @@ public class powerUp {
        rect(x, y, w, h);
      }
      
-=======
+ 
      fill(color(255,255,255));
      image(slowdown, x, y, w, h);
->>>>>>> 12b464fd519d1f3c33c380bbb42ab17745f44e99
+ 
    }
    
    public boolean collisions () {
@@ -50,7 +46,5 @@ public class powerUp {
        
      }
      return false;
-    
    }
-
 }
