@@ -2,7 +2,7 @@ public class ball {
   private float x, y, dx, dy, size;
   private float speed;
   private color ballColor = color(255, 255, 255);
-  public ball(float x, float y, int dx, int dy, int size, float speed) {
+  public ball(float x, float y, float dx, float dy, float size, float speed) {
     this.x = x;
     this.y = y;
     this.dx = dx;

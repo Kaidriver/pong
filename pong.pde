@@ -4,9 +4,9 @@ import android.content.Context;
 import android.app.Activity;
 import android.view.MotionEvent; 
  
-ball menub = new ball(600, 600, 20, 3,25, 1);
-platform player1 = new platform(10, displayHeight/2, 20, 200);
-platform player2 = new platform(displayWidth-20, displayHeight/2, 20, 200);
+ball menub;
+platform player1; 
+platform player2;  
 static final String CONFIG_FILE = "save.txt";
 boolean [] keys = new boolean[128]; 
 ArrayList <powerUp> powerups = new ArrayList <powerUp> ();
@@ -14,30 +14,24 @@ ArrayList <ball> balls = new ArrayList <ball> ();
 int p1score = 0;
 int p2score = 0;
 int soloscore = 0;
-float button1x = 575;
-float button1y = 500;
-float button2x = 1225;
-float button2y = 500;
-float button3x = 880;
-float button3y = 750;
-float button4x = 575;
-float button4y = 800;
-int button1w = 550;
-int button1h = 150;
-int button2w = 550;
-int button2h = 150;
-int button3w = 550;
-int button3h = 150;
-int button4w = 550;
-int button4h = 150;
-float arrow1x = 1250;
-float arrow1y = 530;
-int arrow1w = 75;
-int arrow1h = 75;
-float arrow2x = 1350;
-float arrow2y = 530;
-int arrow2w = 75;
-int arrow2h = 75;
+float button1x;
+float button1y;
+float button2x;
+float button2y;
+float button3x;  
+float button3y;  
+float button4x;
+float button4y;
+float buttonh;
+float buttonw;
+float arrow1x;
+float arrow1y;
+float arrow1w;
+float arrow1h;
+float arrow2x;
+float arrow2y;
+float arrow2w;
+float arrow2h;
 int scorelimit = 5;
 int highscore = 1;
 float px, py;
@@ -45,12 +39,34 @@ boolean loop = true;
 float speedChange = 1.1;
 int scene = 1;
 PImage slowdown;
+PImage addBall;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
   orientation(LANDSCAPE);
   frameRate(300);
   size(displayWidth, displayHeight);
+  button1x = displayWidth/4*1.2;
+  button1y = displayHeight/4*2;
+  button2x = displayWidth/4*2.8;
+  button2y = displayHeight/4*2;
+  button3x = displayWidth/2;
+  button3y = displayHeight/4*3;
+  button4x = displayWidth/4*1.2;
+  button4y = displayHeight/4*3;
+  buttonw = displayWidth*.286;
+  buttonh = displayHeight*.139;
+  arrow1x = displayWidth*.703;
+  arrow1y = displayHeight*.491;
+  arrow1w = displayWidth*.044;
+  arrow1h = displayHeight*.074;
+  arrow2x = displayWidth*.760;
+  arrow2y = displayHeight*.491;
+  arrow2w = displayWidth*.044;
+  arrow2h = displayHeight*.074;
+  menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.0028, displayWidth*.013, 1);
+  player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.01, displayHeight*.185);
+  player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.01, displayHeight*.185);
   rectMode(CENTER);
   textSize(48);
   background(0);
@@ -58,6 +74,7 @@ public void setup() {
   textFont(font);
    
   slowdown = loadImage("slowdown2.png");
+  addBall = loadImage("add.png");
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
   loadData();
@@ -67,12 +84,12 @@ public void draw() {
   if (scene == 1) {
     reset();
     menu();
-    if (mouseX < button1x + (button1w/2) && mouseX > button1x - (button1w/2) && mouseY < button1y + (button1h/2) && mouseY > button1y - (button1h/2)) {
+    if (mouseX < button1x + (buttonw/2) && mouseX > button1x - (buttonw/2) && mouseY < button1y + (buttonh/2) && mouseY > button1y - (buttonh/2)) {
       scene = 2;
     }
-    else if (mouseX < button2x + (button2w/2) && mouseX > button2x - (button2w/2) && mouseY < button2y + (button2h/2) && mouseY > button2y - (button2h/2)) {
+    else if (mouseX < button2x + (buttonw/2) && mouseX > button2x - (buttonw/2) && mouseY < button2y + (buttonh/2) && mouseY > button2y - (buttonh/2)) {
       scene = 3;
-    }  else if (mouseX < button4x + (button4w/2) && mouseX > button4x - (button4w/2) && mouseY < button4y + (button4h/2) && mouseY > button4y - (button4h/2)) {
+    }  else if (mouseX < button4x + (buttonw/2) && mouseX > button4x - (buttonw/2) && mouseY < button4y + (buttonh/2) && mouseY > button4y - (buttonh/2)) {
       scene = 7;
     }
   }
@@ -137,11 +154,11 @@ public void draw() {
      text("HIGH SCORE: " + highscore, displayWidth/2, displayHeight/2*1.25);
     fill(0);
     stroke(255);
-    rect(button3x, button3y, button3w, button3h);
+    rect(button3x, button3y, buttonw, buttonh);
     fill(255);
     textSize(48);
     text("Main Menu", button3x, button3y);
-    if (mouseX < button3x + (button3w/2) && mouseX > button3x - (button3w/2) && mouseY < button3y + (button3h/2) && mouseY > button3y - (button3h/2)) {
+    if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
       scene = 1;
     }
   } else if (scene == 4) {
@@ -163,11 +180,11 @@ public void draw() {
     
     fill(0);
     stroke(255);
-    rect(button3x, button3y, button3w, button3h);
+    rect(button3x, button3y, buttonw, buttonh);
     fill(255);
     textSize(48);
     text("Main Menu", button3x, button3y);
-    if (mouseX < button3x + (button3w/2) && mouseX > button3x - (button3w/2) && mouseY < button3y + (button3h/2) && mouseY > button3y - (button3h/2)) {
+    if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
       scene = 1;
     } 
   } else if (scene == 7) {
@@ -212,19 +229,19 @@ public void menu() {
     text("PONG", displayWidth/2, displayHeight/2*.5f);
     fill(0);
     stroke(255);
-    rect(button1x, button1y, button1w, button1h);
+    rect(button1x, button1y, buttonw, buttonh);
     fill(255);
     textSize(48);
     text("Play against ai", button1x, button1y);
     fill(0);
     stroke(255);
-    rect(button2x, button2y, button2w, button2h);
+    rect(button2x, button2y, buttonw, buttonh);
     fill(255);
     textSize(48);
     text("Play solo", button2x, button2y);
     fill(0);
     stroke(255);
-    rect(button4x, button4y, button4w, button4h);
+    rect(button4x, button4y, buttonw, buttonh);
     fill(255);
     textSize(48);
     text("Two Player", button4x, button4y);
@@ -233,7 +250,7 @@ public void menu() {
  
 public void reset() {
   balls.clear();
-  balls.add(new ball(900, 360, 8, 0, 25,1));
+  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.004, 0, displayWidth*.013,1));
   powerups.clear();
   speedChange = 1.1;
   player1.y = displayHeight/2;
@@ -278,12 +295,12 @@ void select() {
   triangle(arrow2x+arrow2w/2, arrow2y, arrow2x-arrow2w/2, arrow2y-arrow2h/2, arrow2x-arrow2w/2, arrow2y+arrow2h/2);
   fill(0);
   stroke(255);
-  rect(button3x, button3y, button3w, button3h);
+  rect(button3x, button3y, buttonw, buttonh);
   fill(255);
   textSize(48);
   text("Play", button3x, button3y);
    
-  if (mouseX < button3x + (button3w/2) && mouseX > button3x - (button3w/2) && mouseY < button3y + (button3h/2) && mouseY > button3y - (button3h/2)) {
+  if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
     if (scene == 7) {
       scene = 8;
     } else {

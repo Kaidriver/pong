@@ -4,7 +4,7 @@ public class powerUp {
  
    private int type;
    private color platColor = color(255,255,255);
-   public powerUp(float x, float y, float w, float h, int type) {
+   public powerUp( float x,float y, float w, float h, int type) {
     this.x = x;
     this.y = y;
     this.w = w;
@@ -19,7 +19,7 @@ public class powerUp {
        image(slowdown, x, y, w, h);
      } else if (type == 2) {
        fill(255);
-       rect(x, y, w, h);
+       image(addBall, x, y, w, h);
      }
      
  
