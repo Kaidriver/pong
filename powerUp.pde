@@ -20,11 +20,10 @@ public class powerUp {
      } else if (type == 2) {
        fill(255);
        image(addBall, x, y, w, h);
+     } else if (type == 3) {
+       fill(255);
+       image(removeBall, x, y, w, h);
      }
-     
- 
-     fill(color(255,255,255));
-     image(slowdown, x, y, w, h);
  
    }
    
@@ -39,6 +38,10 @@ public class powerUp {
              ballz.dy *= .5;
            } else if (type == 2) {
              balls.add(new ball(x, y, 8, 3, 25,1));
+           } else if (type == 3) {
+             if (balls.size() > 1) {
+               balls.remove(balls.size()-1);
+             }
            }
            
            return true;

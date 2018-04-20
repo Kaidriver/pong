@@ -65,6 +65,11 @@ public class ball {
       if (dx < 0) {
         dx*= -1;
       }
+      if (dy < 0) {
+         dy = -1;
+      } else {
+         dy = 1;
+      }  
       speed *= speedChange;
       soloscore += 1;
     } else if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y + player1.h/8 && y - size/2 < player1.y + player1.h/8*2)) {

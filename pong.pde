@@ -35,11 +35,13 @@ float arrow2h;
 int scorelimit = 5;
 int highscore = 1;
 float px, py;
+ 
 boolean loop = true;
-float speedChange = 1.1;
+float speedChange = 1.01;
 int scene = 1;
 PImage slowdown;
 PImage addBall;
+PImage removeBall;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
@@ -75,6 +77,7 @@ public void setup() {
    
   slowdown = loadImage("slowdown2.png");
   addBall = loadImage("add.png");
+  removeBall = loadImage("removeball.png");
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
   loadData();
@@ -111,7 +114,7 @@ public void draw() {
     player2.display();
     player1.bounds();
     player2.bounds();
- //   aiMovement();
+    aiMovement();
     platBoundary();
     
     
@@ -250,9 +253,9 @@ public void menu() {
  
 public void reset() {
   balls.clear();
-  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.004, 0, displayWidth*.013,1));
+  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013,1));
   powerups.clear();
-  speedChange = 1.1;
+  speedChange = 1.01 ;
   player1.y = displayHeight/2;
   player2.y = displayHeight/2;
   soloscore = 0;
@@ -263,13 +266,17 @@ public void reset() {
   }
 }
  
-/*public void aiMovement() {
-  if (player1.y > ball.y) {
+public void aiMovement(){
+  for (int i = 0; i < balls.size(); i++) {
+     ball ballz = balls.get(i);
+     if (player1.y > ballz.y) {
       player1.y -= 10;
-  } else if (player1.y < ball.y){
+     } else if (player1.y < ballz.y){
       player1.y += 10;
-  }
-}*/
+     }
+   }
+  
+}
 public void platBoundary() {
   if (player1.x < 10 || player1.x > 10) {
       player1.x = 10;
@@ -364,17 +371,22 @@ public boolean surfaceTouchEvent(MotionEvent me) {
 }
 void powerup() {
   
-  if (millis()%500 == 0) {
+  if (millis()%250 == 0) {
      
-    int prob = int(random(4));
+    int prob = int(random(6));
     if (prob == 1) {
       px = random(200, 1000);
       py = random (200, 600);
       powerups.add(new powerUp(px, py, 80, 80, 1));
-    } else if (prob == 2) {
+    }
+    else if (prob == 2) {
       px = random(200, 1000);
-      py = random (200, 600);
+      py = random(200, 600);
       powerups.add(new powerUp(px, py, 80, 80, 2));
+    } else if (prob == 3) {
+      px = random(200, 1000);
+      py = random(200, 600);
+      powerups.add(new powerUp(px, py, 80, 80, 3));
     }
   }
 }
