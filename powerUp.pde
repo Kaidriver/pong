@@ -23,6 +23,12 @@ public class powerUp {
      } else if (type == 3) {
        fill(255);
        image(removeBall, x, y, w, h);
+     } else if (type == 4) {
+       fill(255);
+       rect(x, y, w, h);
+     } else if (type == 5) {
+       fill(125);
+       rect(x, y, w, h);
      }
  
    }
@@ -42,6 +48,12 @@ public class powerUp {
              if (balls.size() > 1) {
                balls.remove(balls.size()-1);
              }
+           } else if (type == 4) {
+             player1.h *= 1.33;
+             player2.h *= 1.33;
+           } else if (type == 5) {
+             player1.h *= .66;
+             player2.h *= .66;
            }
            
            return true;

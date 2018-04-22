@@ -116,10 +116,7 @@ public void draw() {
     player2.bounds();
     aiMovement();
     platBoundary();
-    
-    
- 
- 
+
   }
   else if (scene == 3) {
     background(0);
@@ -258,6 +255,8 @@ public void reset() {
   speedChange = 1.01 ;
   player1.y = displayHeight/2;
   player2.y = displayHeight/2;
+  player1.h = displayHeight*.185;
+  player2.h = displayHeight*.185;
   soloscore = 0;
   scorelimit = 5;
   if (scene == 1) {
@@ -373,7 +372,7 @@ void powerup() {
   
   if (millis()%250 == 0) {
      
-    int prob = int(random(6));
+    int prob = int(random(11));
     if (prob == 1) {
       px = random(200, 1000);
       py = random (200, 600);
@@ -387,6 +386,14 @@ void powerup() {
       px = random(200, 1000);
       py = random(200, 600);
       powerups.add(new powerUp(px, py, 80, 80, 3));
+    } else if (prob == 4) {
+      px = random(200, 1000);
+      py = random(200, 600);
+      powerups.add(new powerUp(px, py, 80, 80, 4));
+    } else if (prob == 5) {
+      px = random(200, 1000);
+      py = random(200, 600);
+      powerups.add(new powerUp(px, py, 80, 80, 5));
     }
   }
 }
