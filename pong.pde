@@ -32,10 +32,14 @@ float arrow2x;
 float arrow2y;
 float arrow2w;
 float arrow2h;
+float arrow3x;
+float arrow3y;
+float arrow4x;
+float arrow4y;
 int scorelimit = 5;
 int highscore = 1;
 float px, py;
- 
+boolean crazyMode = false;
 boolean loop = true;
 float speedChange = 1.01;
 int scene = 1;
@@ -56,6 +60,7 @@ public void setup() {
   button3y = displayHeight/4*3;
   button4x = displayWidth/4*1.2;
   button4y = displayHeight/4*3;
+   
   buttonw = displayWidth*.286;
   buttonh = displayHeight*.139;
   arrow1x = displayWidth*.703;
@@ -66,6 +71,10 @@ public void setup() {
   arrow2y = displayHeight*.491;
   arrow2w = displayWidth*.044;
   arrow2h = displayHeight*.074;
+  arrow3x = displayWidth*.703;
+  arrow3y = displayHeight/2*.5;
+  arrow4x = displayWidth*.85;
+  arrow4y = displayHeight/2*.5;
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.0028, displayWidth*.013, 1);
   player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.01, displayHeight*.185);
   player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.01, displayHeight*.185);
@@ -102,6 +111,7 @@ public void draw() {
     background(0);
     text(p1score, displayWidth/10, 30);
     text(p2score, displayWidth/10*9, 30);
+    
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
@@ -116,6 +126,16 @@ public void draw() {
     player2.bounds();
     aiMovement();
     platBoundary();
+    if (crazyMode) {
+      powerup();
+      for (int i = 0; i < powerups.size(); i++) {
+      powerUp powerup = powerups.get(i);
+      powerup.display();
+      if (powerup.collisions()) {
+        powerups.remove(i);
+      }
+    }
+    }
 
   }
   else if (scene == 3) {
@@ -288,6 +308,23 @@ void select() {
   background(0);
   textAlign(CENTER);
   fill(255);
+  text("Crazy Mode",  displayWidth/2, displayHeight/2*.5);
+  fill(0);
+  stroke(255);
+  rect(arrow3x, arrow3y, arrow1h, arrow1w);
+  fill(255);
+  triangle(arrow3x-arrow1w/2, arrow3y, arrow3x+arrow1w/2, arrow3y-arrow1h/2, arrow3x+arrow1w/2, arrow3y+arrow1h/2);
+  fill(0);
+  stroke(255);
+  rect(arrow4x, arrow4y, arrow2h, arrow2w);
+  fill(255);
+  triangle(arrow4x+arrow2w/2, arrow4y, arrow4x-arrow2w/2, arrow4y-arrow2h/2, arrow4x-arrow2w/2, arrow4y+arrow2h/2);
+  if (crazyMode) {
+    text("YES", displayWidth*.79, displayHeight/2*.52);
+  } else {
+    text("NO", displayWidth*.79, displayHeight/2*.52);
+  }
+  fill(255);
   text("Select scrore limit: " + scorelimit, displayWidth/2, displayHeight/2);
   fill(0);
   stroke(255);
@@ -305,7 +342,7 @@ void select() {
   fill(255);
   textSize(48);
   text("Play", button3x, button3y);
-   
+  
   if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
     if (scene == 7) {
       scene = 8;
@@ -323,6 +360,13 @@ void mousePressed() {
       }
       else if (mouseX < arrow2x + (arrow2w/2) && mouseX > arrow2x - (arrow2w/2) && mouseY < arrow2y + (arrow2h/2) && mouseY > arrow2y - (arrow2h/2)) {
         scorelimit += 1;    
+      } else if (mouseX < arrow3x + (arrow1w/2) && mouseX > arrow3x - (arrow1w/2) && mouseY < arrow3y + (arrow1h/2) && mouseY > arrow3y - (arrow1h/2)) {
+        
+        crazyMode = false;
+      }
+      else if (mouseX < arrow4x + (arrow2w/2) && mouseX > arrow4x - (arrow2w/2) && mouseY < arrow4y + (arrow2h/2) && mouseY > arrow4y - (arrow2h/2)) {
+       
+        crazyMode = true;
       }  
 }
  
