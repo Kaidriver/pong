@@ -25,10 +25,10 @@ public class powerUp {
        image(removeBall, x, y, w, h);
      } else if (type == 4) {
        fill(255);
-       rect(x, y, w, h);
+       image(expand, x, y, w, h);
      } else if (type == 5) {
        fill(125);
-       rect(x, y, w, h);
+       image(shrink, x, y, w, h);
      }
  
    }
@@ -40,8 +40,8 @@ public class powerUp {
            
            fill(255);
            if (type == 1) {
-             ballz.dx *= .5;  
-             ballz.dy *= .5;
+             ballz.speed *= .5;  
+             ballz.speed *= .5;
            } else if (type == 2) {
              balls.add(new ball(x, y, 8, 3, 25,1));
            } else if (type == 3) {

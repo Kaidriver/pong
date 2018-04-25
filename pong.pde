@@ -46,6 +46,8 @@ int scene = 1;
 PImage slowdown;
 PImage addBall;
 PImage removeBall;
+PImage expand;
+PImage shrink;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
@@ -87,6 +89,8 @@ public void setup() {
   slowdown = loadImage("slowdown2.png");
   addBall = loadImage("add.png");
   removeBall = loadImage("removeball.png");
+  expand = loadImage("expand.png");
+  shrink = loadImage("shrink.png");
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
   loadData();
@@ -129,12 +133,12 @@ public void draw() {
     if (crazyMode) {
       powerup();
       for (int i = 0; i < powerups.size(); i++) {
-      powerUp powerup = powerups.get(i);
-      powerup.display();
-      if (powerup.collisions()) {
-        powerups.remove(i);
+        powerUp powerup = powerups.get(i);
+        powerup.display();
+        if (powerup.collisions()) {
+          powerups.remove(i);
+        }
       }
-    }
     }
 
   }
@@ -226,7 +230,16 @@ public void draw() {
         ballz.move();
         ballz.win();
       }
-      
+      if (crazyMode) {
+        powerup();
+        for (int i = 0; i < powerups.size(); i++) {
+          powerUp powerup = powerups.get(i);
+          powerup.display();
+          if (powerup.collisions()) {
+            powerups.remove(i);
+          }
+        }
+      }
       platBoundary();
     
  
