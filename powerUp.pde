@@ -36,7 +36,7 @@ public class powerUp {
    public boolean collisions () {
      for (int i = 0; i < balls.size(); i++) {
        ball ballz = balls.get(i);
-        if (ballz.x < x + (w/2) && ballz.x > x - (w/2) && ballz.y < y + (h/2) && ballz.y > y - (h/2)) {
+        if (ballz.x - ballz.size/2 < x + (w/2) && ballz.x + ballz.size/2 > x - (w/2) && ballz.y - ballz.size/2 < y + (h/2) && ballz.y + ballz.size/2 > y - (h/2)) {
            
            fill(255);
            if (type == 1) {
