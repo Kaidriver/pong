@@ -36,6 +36,10 @@ float arrow3x;
 float arrow3y;
 float arrow4x;
 float arrow4y;
+float backbtnx;
+float backbtny;
+float backbtnw;
+float backbtnh;
 int scorelimit = 5;
 int highscore = 1;
 float px, py;
@@ -74,9 +78,13 @@ public void setup() {
   arrow2w = displayWidth*.044;
   arrow2h = displayHeight*.074;
   arrow3x = displayWidth*.703;
-  arrow3y = displayHeight/2*.5;
-  arrow4x = displayWidth*.85;
-  arrow4y = displayHeight/2*.5;
+  arrow3y = displayHeight/2*.57;
+  arrow4x = displayWidth*.82;
+  arrow4y = displayHeight/2*.57;
+  backbtnx = displayWidth/10;
+  backbtny = displayHeight/9;
+  backbtnw = displayWidth*.044;
+  backbtnh = displayHeight*.074;
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.0028, displayWidth*.013, 1);
   player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.01, displayHeight*.185);
   player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.01, displayHeight*.185);
@@ -321,7 +329,14 @@ void select() {
   background(0);
   textAlign(CENTER);
   fill(255);
-  text("Crazy Mode",  displayWidth/2, displayHeight/2*.5);
+  text("Back",  displayWidth/5.75, displayHeight/8.25);
+  fill(0);
+  stroke(255);
+  rect(backbtnx, backbtny, backbtnw, backbtnh);
+  fill(255);
+  triangle(backbtnx-backbtnw/2, backbtny, backbtnx+backbtnw/2, backbtny-backbtnh/2, backbtnx+backbtnw/2, backbtny+backbtnh/2);
+  fill(255);
+  text("Crazy Mode",  displayWidth/2, displayHeight/2*.6);
   fill(0);
   stroke(255);
   rect(arrow3x, arrow3y, arrow1h, arrow1w);
@@ -333,9 +348,9 @@ void select() {
   fill(255);
   triangle(arrow4x+arrow2w/2, arrow4y, arrow4x-arrow2w/2, arrow4y-arrow2h/2, arrow4x-arrow2w/2, arrow4y+arrow2h/2);
   if (crazyMode) {
-    text("YES", displayWidth*.79, displayHeight/2*.52);
+    text("YES", displayWidth*.763, displayHeight/2*.59);
   } else {
-    text("NO", displayWidth*.79, displayHeight/2*.52);
+    text("NO", displayWidth*.763, displayHeight/2*.59);
   }
   fill(255);
   text("Select scrore limit: " + scorelimit, displayWidth/2, displayHeight/2);
@@ -362,7 +377,8 @@ void select() {
     } else {
       scene = 6;
     }
-  
+  } else if (mouseX < backbtnx + (backbtnw/2) && mouseX > backbtnx - (backbtnw/2) && mouseY < backbtny + (backbtnh/2) && mouseY > backbtny - (backbtnh/2)) {
+    scene = 1;
   }
 }
 void mousePressed() {
