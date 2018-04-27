@@ -46,16 +46,17 @@ float px, py;
 boolean crazyMode = false;
 boolean loop = true;
 float speedChange = 1.01;
-int scene = 1;
+int scene = 0;
 PImage slowdown;
 PImage addBall;
 PImage removeBall;
 PImage expand;
 PImage shrink;
+PImage [] logo;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
-  orientation(LANDSCAPE);
+  orientation(PORTRAIT);
   frameRate(300);
   size(displayWidth, displayHeight);
   button1x = displayWidth/4*1.2;
@@ -99,13 +100,22 @@ public void setup() {
   removeBall = loadImage("removeball.png");
   expand = loadImage("expand.png");
   shrink = loadImage("shrink.png");
+  logo = new PImage[5];
+  for (int i = 0; i < logo.length; i++) {
+    String filename = "startScreen" + i + ".gif";
+    logo[i] = loadImage(filename);
+  }
+  image(logo[0], 0, 0, width, height);
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
   loadData();
 }
 public void draw() {
    saveData();
-  if (scene == 1) {
+  if (scene == 0) {
+    createLogo();
+  } 
+  else if (scene == 1) {
     reset();
     menu();
     if (mouseX < button1x + (buttonw/2) && mouseX > button1x - (buttonw/2) && mouseY < button1y + (buttonh/2) && mouseY > button1y - (buttonh/2)) {
@@ -469,4 +479,33 @@ void powerup() {
       powerups.add(new powerUp(px, py, 80, 80, 5));
     }
   }
+}
+void createLogo()
+{
+  
+ if (frameCount>=120)
+    {
+      image(logo[0], 0, 0, width, height);
+    }
+    if (frameCount>=122)
+    {
+      image(logo[1], 0, 0, width, height);
+    }
+    if (frameCount>=124)
+    {
+      image(logo[2], 0, 0, width, height);
+    }
+    if (frameCount>=126)
+    {
+      image(logo[3], 0, 0, width, height);
+    }
+    if (frameCount>=127)
+    {
+      image(logo[4], 0, 0, width, height);
+    }
+    if (frameCount>=170)
+    {
+      orientation(LANDSCAPE);
+      scene = 1;
+    } 
 }
