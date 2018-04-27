@@ -56,7 +56,7 @@ PImage [] logo;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
-  orientation(PORTRAIT);
+  orientation(LANDSCAPE);
   frameRate(300);
   size(displayWidth, displayHeight);
   button1x = displayWidth/4*1.2;
@@ -505,7 +505,7 @@ void createLogo()
     }
     if (frameCount>=170)
     {
-      orientation(LANDSCAPE);
+       
       scene = 1;
     } 
 }
