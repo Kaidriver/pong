@@ -3,7 +3,7 @@ import android.preference.PreferenceManager;
 import android.content.Context;
 import android.app.Activity;
 import android.view.MotionEvent; 
- 
+
 ball menub;
 platform player1; 
 platform player2;  
@@ -22,6 +22,8 @@ float button3x;
 float button3y;  
 float button4x;
 float button4y;
+float button5x;
+float button5y;
 float buttonh;
 float buttonw;
 float arrow1x;
@@ -57,7 +59,7 @@ PImage [] logo;
 public void setup() {
 
   orientation(LANDSCAPE);
-  frameRate(300);
+  frameRate(60);
   size(displayWidth, displayHeight);
   button1x = displayWidth/4*1.2;
   button1y = displayHeight/4*2;
@@ -67,7 +69,8 @@ public void setup() {
   button3y = displayHeight/4*3;
   button4x = displayWidth/4*1.2;
   button4y = displayHeight/4*3;
-   
+  button5x = displayWidth/4*2.8;
+  button5y = displayHeight/4*3; 
   buttonw = displayWidth*.286;
   buttonh = displayHeight*.139;
   arrow1x = displayWidth*.703;
@@ -94,7 +97,7 @@ public void setup() {
   background(0);
   PFont font = loadFont("ShowcardGothic-Reg-48.vlw");
   textFont(font);
-   
+
   slowdown = loadImage("slowdown2.png");
   addBall = loadImage("add.png");
   removeBall = loadImage("removeball.png");
@@ -111,29 +114,20 @@ public void setup() {
   loadData();
 }
 public void draw() {
-   saveData();
+  saveData();
   if (scene == 0) {
     createLogo();
-  } 
-  else if (scene == 1) {
+  } else if (scene == 1) {
     reset();
+    scorelimit = 5;
     menu();
-    if (mouseX < button1x + (buttonw/2) && mouseX > button1x - (buttonw/2) && mouseY < button1y + (buttonh/2) && mouseY > button1y - (buttonh/2)) {
-      scene = 2;
-    }
-    else if (mouseX < button2x + (buttonw/2) && mouseX > button2x - (buttonw/2) && mouseY < button2y + (buttonh/2) && mouseY > button2y - (buttonh/2)) {
-      scene = 3;
-    }  else if (mouseX < button4x + (buttonw/2) && mouseX > button4x - (buttonw/2) && mouseY < button4y + (buttonh/2) && mouseY > button4y - (buttonh/2)) {
-      scene = 7;
-    }
-  }
-  else if (scene == 2) {
-      select();
+  } else if (scene == 2) {
+    select();
   } else if (scene == 6) {
     background(0);
     text(p1score, displayWidth/10, 30);
     text(p2score, displayWidth/10*9, 30);
-    
+
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
@@ -141,7 +135,7 @@ public void draw() {
       ballz.move();
       ballz.win();
     }
-    
+
     player1.display();
     player2.display();
     player1.bounds();
@@ -158,26 +152,24 @@ public void draw() {
         }
       }
     }
-
-  }
-  else if (scene == 3) {
+  } else if (scene == 3) {
     background(0);
     text(soloscore, displayWidth/2, 30);
     for (int i = 0; i < balls.size(); i++) {
-        ball ballz = balls.get(i);
-        ballz.display();
-        ballz.collisions();
-        ballz.move();
-        ballz.gameover();
+      ball ballz = balls.get(i);
+      ballz.display();
+      ballz.collisions();
+      ballz.move();
+      ballz.gameover();
     }
     player1.display();
     player2.display();
     player1.bounds();
     player2.bounds();
- 
+
     player1.y = player2.y;
     platBoundary();
-  
+
     powerup();
     for (int i = 0; i < powerups.size(); i++) {
       powerUp powerup = powerups.get(i);
@@ -186,14 +178,12 @@ public void draw() {
         powerups.remove(i);
       }
     }
-    
-   
   } else if (scene == 0) {
     background(0);
     textSize(60);
     text("GAMEOVER!", displayWidth/2, displayHeight/2*.5);
     text("YOUR SCORE: " + soloscore, displayWidth/2, displayHeight/2);
-     text("HIGH SCORE: " + highscore, displayWidth/2, displayHeight/2*1.25);
+    text("HIGH SCORE: " + highscore, displayWidth/2, displayHeight/2*1.25);
     fill(0);
     stroke(255);
     rect(button3x, button3y, buttonw, buttonh);
@@ -208,18 +198,18 @@ public void draw() {
     textSize(60);
     if (scene == 3) {
       if (p1score > p2score) {
-      text("YOU LOST!", displayWidth/2, displayHeight/2*.5);
-      } else  {
-      text("YOU WON!", displayWidth/2, displayHeight/2);
+        text("YOU LOST!", displayWidth/2, displayHeight/2*.5);
+      } else {
+        text("YOU WON!", displayWidth/2, displayHeight/2);
       }
     } else {
       if (p1score > p2score) {
-      text("Player 1 Won!", displayWidth/2, displayHeight/2*.5);
-      } else  {
-      text("Player 2 Won!", displayWidth/2, displayHeight/2);
+        text("Player 1 Won!", displayWidth/2, displayHeight/2*.5);
+      } else {
+        text("Player 2 Won!", displayWidth/2, displayHeight/2);
       }
     }
-    
+
     fill(0);
     stroke(255);
     rect(button3x, button3y, buttonw, buttonh);
@@ -228,80 +218,93 @@ public void draw() {
     text("Main Menu", button3x, button3y);
     if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
       scene = 1;
-    } 
+    }
   } else if (scene == 7) {
-      select();
-    
+    select();
   } else if (scene == 8) {
-      background(0);
-      text(p1score, displayWidth/10, 30);
-      text(p2score, displayWidth/10*9, 30);
-  
-      player1.display();
-      player2.display();
-      player1.bounds();
-      player2.bounds();
-      for (int i = 0; i < balls.size(); i++) {
-        ball ballz = balls.get(i);
-        ballz.display();
-        ballz.collisions();
-        ballz.move();
-        ballz.win();
-      }
-      if (crazyMode) {
-        powerup();
-        for (int i = 0; i < powerups.size(); i++) {
-          powerUp powerup = powerups.get(i);
-          powerup.display();
-          if (powerup.collisions()) {
-            powerups.remove(i);
-          }
+    background(0);
+    text(p1score, displayWidth/10, 30);
+    text(p2score, displayWidth/10*9, 30);
+
+    player1.display();
+    player2.display();
+    player1.bounds();
+    player2.bounds();
+    for (int i = 0; i < balls.size(); i++) {
+      ball ballz = balls.get(i);
+      ballz.display();
+      ballz.collisions();
+      ballz.move();
+      ballz.win();
+    }
+    if (crazyMode) {
+      powerup();
+      for (int i = 0; i < powerups.size(); i++) {
+        powerUp powerup = powerups.get(i);
+        powerup.display();
+        if (powerup.collisions()) {
+          powerups.remove(i);
         }
       }
-      platBoundary();
-    
- 
-   }
+    }
+    platBoundary();
+  } else if (scene == 9) {
+    howtoplayscreen();
+  }
 }
- 
+
 public void menu() {
   background(0);
   menub.display();
   menub.move();
- 
-  if(menub.y + (menub.size/2) > height || menub.y-(menub.size/2) < 0) {
-     menub.dy*= -1;
-   } else if (menub.x + (menub.size/2) > width || menub.x-(menub.size/2) < 0) {
-     menub.dx*= -1;
-   }
- 
-    textAlign(CENTER);
-    textSize(128);
-    text("PONG", displayWidth/2, displayHeight/2*.5f);
-    fill(0);
-    stroke(255);
-    rect(button1x, button1y, buttonw, buttonh);
-    fill(255);
-    textSize(48);
-    text("Play against ai", button1x, button1y);
-    fill(0);
-    stroke(255);
-    rect(button2x, button2y, buttonw, buttonh);
-    fill(255);
-    textSize(48);
-    text("Play solo", button2x, button2y);
-    fill(0);
-    stroke(255);
-    rect(button4x, button4y, buttonw, buttonh);
-    fill(255);
-    textSize(48);
-    text("Two Player", button4x, button4y);
 
+  if (menub.y + (menub.size/2) > height || menub.y-(menub.size/2) < 0) {
+    menub.dy*= -1;
+  } else if (menub.x + (menub.size/2) > width || menub.x-(menub.size/2) < 0) {
+    menub.dx*= -1;
+  }
+
+  textAlign(CENTER);
+  textSize(128);
+  text("PONG", displayWidth/2, displayHeight/2*.5f);
+  fill(0);
+  stroke(255);
+  rect(button1x, button1y, buttonw, buttonh);
+  fill(255);
+  textSize(48);
+  text("Play against ai", button1x, button1y);
+  fill(0);
+  stroke(255);
+  rect(button2x, button2y, buttonw, buttonh);
+  fill(255);
+  textSize(48);
+  text("Play solo", button2x, button2y);
+  fill(0);
+  stroke(255);
+  rect(button4x, button4y, buttonw, buttonh);
+  fill(255);
+  textSize(48);
+  text("Two Player", button4x, button4y);
+  fill(0);
+  stroke(255);
+  rect(button5x, button5y, buttonw, buttonh);
+  fill(255);
+  textSize(48);
+  text("How to Play", button5x, button5y);
+  if (mouseX < button1x + (buttonw/2) && mouseX > button1x - (buttonw/2) && mouseY < button1y + (buttonh/2) && mouseY > button1y - (buttonh/2)) {
+    scene = 2;
+  } else if (mouseX < button2x + (buttonw/2) && mouseX > button2x - (buttonw/2) && mouseY < button2y + (buttonh/2) && mouseY > button2y - (buttonh/2)) {
+    scene = 3;
+  } else if (mouseX < button4x + (buttonw/2) && mouseX > button4x - (buttonw/2) && mouseY < button4y + (buttonh/2) && mouseY > button4y - (buttonh/2)) {
+    scene = 7;
+  } else if (mouseX < button5x + (buttonw/2) && mouseX > button5x - (buttonw/2) && mouseY < button5y + (buttonh/2) && mouseY > button5y - (buttonh/2)) {
+    scene = 9;
+  }
 }
- 
+
 public void reset() {
   balls.clear();
-  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013,1));
+  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1));
   powerups.clear();
   speedChange = 1.01 ;
   player1.y = displayHeight/2;
@@ -309,44 +312,43 @@ public void reset() {
   player1.h = displayHeight*.185;
   player2.h = displayHeight*.185;
   soloscore = 0;
-  scorelimit = 5;
+
   if (scene == 1) {
     p1score = 0;
     p2score = 0;
   }
 }
- 
-public void aiMovement(){
+
+public void aiMovement() {
   for (int i = 0; i < balls.size(); i++) {
-     ball ballz = balls.get(i);
-     if (player1.y > ballz.y) {
+    ball ballz = balls.get(i);
+    if (player1.y > ballz.y) {
       player1.y -= 10;
-     } else if (player1.y < ballz.y){
+    } else if (player1.y < ballz.y) {
       player1.y += 10;
-     }
-   }
-  
+    }
+  }
 }
 public void platBoundary() {
   if (player1.x < 10 || player1.x > 10) {
-      player1.x = 10;
-    }
-    if (player2.x < displayWidth-20 || player2.x > displayWidth-20) {
-      player2.x = displayWidth-20;
-    }
+    player1.x = 10;
+  }
+  if (player2.x < displayWidth-20 || player2.x > displayWidth-20) {
+    player2.x = displayWidth-20;
+  }
 }
 void select() {
   background(0);
   textAlign(CENTER);
   fill(255);
-  text("Back",  displayWidth/5.75, displayHeight/8.25);
+  text("Back", displayWidth/5.75, displayHeight/8.25);
   fill(0);
   stroke(255);
   rect(backbtnx, backbtny, backbtnw, backbtnh);
   fill(255);
   triangle(backbtnx-backbtnw/2, backbtny, backbtnx+backbtnw/2, backbtny-backbtnh/2, backbtnx+backbtnw/2, backbtny+backbtnh/2);
   fill(255);
-  text("Crazy Mode",  displayWidth/2, displayHeight/2*.6);
+  text("Crazy Mode", displayWidth/2, displayHeight/2*.6);
   fill(0);
   stroke(255);
   rect(arrow3x, arrow3y, arrow1h, arrow1w);
@@ -380,7 +382,7 @@ void select() {
   fill(255);
   textSize(48);
   text("Play", button3x, button3y);
-  
+
   if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
     if (scene == 7) {
       scene = 8;
@@ -392,24 +394,22 @@ void select() {
   }
 }
 void mousePressed() {
-     if (mouseX < arrow1x + (arrow1w/2) && mouseX > arrow1x - (arrow1w/2) && mouseY < arrow1y + (arrow1h/2) && mouseY > arrow1y - (arrow1h/2)) {
-         if (scorelimit > 0) {
-            scorelimit -= 1; 
-         }
-      }
-      else if (mouseX < arrow2x + (arrow2w/2) && mouseX > arrow2x - (arrow2w/2) && mouseY < arrow2y + (arrow2h/2) && mouseY > arrow2y - (arrow2h/2)) {
-        scorelimit += 1;    
-      } else if (mouseX < arrow3x + (arrow1w/2) && mouseX > arrow3x - (arrow1w/2) && mouseY < arrow3y + (arrow1h/2) && mouseY > arrow3y - (arrow1h/2)) {
-        
-        crazyMode = false;
-      }
-      else if (mouseX < arrow4x + (arrow2w/2) && mouseX > arrow4x - (arrow2w/2) && mouseY < arrow4y + (arrow2h/2) && mouseY > arrow4y - (arrow2h/2)) {
-       
-        crazyMode = true;
-      }  
+  if (mouseX < arrow1x + (arrow1w/2) && mouseX > arrow1x - (arrow1w/2) && mouseY < arrow1y + (arrow1h/2) && mouseY > arrow1y - (arrow1h/2)) {
+    if (scorelimit > 0) {
+      scorelimit -= 1;
+    }
+  } else if (mouseX < arrow2x + (arrow2w/2) && mouseX > arrow2x - (arrow2w/2) && mouseY < arrow2y + (arrow2h/2) && mouseY > arrow2y - (arrow2h/2)) {
+    scorelimit += 1;
+  } else if (mouseX < arrow3x + (arrow1w/2) && mouseX > arrow3x - (arrow1w/2) && mouseY < arrow3y + (arrow1h/2) && mouseY > arrow3y - (arrow1h/2)) {
+
+    crazyMode = false;
+  } else if (mouseX < arrow4x + (arrow2w/2) && mouseX > arrow4x - (arrow2w/2) && mouseY < arrow4y + (arrow2h/2) && mouseY > arrow4y - (arrow2h/2)) {
+
+    crazyMode = true;
+  }
 }
- 
- 
+
+
 void saveData() {
   SharedPreferences sharedPreferences;
   SharedPreferences.Editor editor;
@@ -431,81 +431,72 @@ void loadData() {
 public boolean surfaceTouchEvent(MotionEvent me) {
   int numTouches = me.getPointerCount();
   for (int i=0; i < numTouches; i++) { 
-     int pointerId = me.getPointerId(i);
-     if (scene == 3) {
-       if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200) {
-         player2.y = me.getY(i);
-         
-       }
-      
-     } else {
-       if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200) {
-   
-         player1.y = me.getY(i);
-       } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200) {
-      
-         player2.y = me.getY(i);
-       }
+    int pointerId = me.getPointerId(i);
+    if (scene == 3) {
+      if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200) {
+        player2.y = me.getY(i);
+      }
+    } else {
+      if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200) {
+
+        player1.y = me.getY(i);
+      } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200) {
+
+        player2.y = me.getY(i);
+      }
     }
   }
   return super.surfaceTouchEvent(me);
-  
 }
 void powerup() {
-  
+
   if (millis()%250 == 0) {
-     
-    int prob = int(random(11));
+
+    int prob = int(random(2));
     if (prob == 1) {
       px = random(200, 1000);
       py = random (200, 600);
       powerups.add(new powerUp(px, py, 80, 80, 1));
-    }
-    else if (prob == 2) {
-      px = random(200, 1000);
-      py = random(200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 2));
-    } else if (prob == 3) {
-      px = random(200, 1000);
-      py = random(200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 3));
-    } else if (prob == 4) {
-      px = random(200, 1000);
-      py = random(200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 4));
-    } else if (prob == 5) {
-      px = random(200, 1000);
-      py = random(200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 5));
-    }
+    }  
   }
 }
 void createLogo()
 {
-  
- if (frameCount>=120)
-    {
-      image(logo[0], 0, 0, width, height);
-    }
-    if (frameCount>=122)
-    {
-      image(logo[1], 0, 0, width, height);
-    }
-    if (frameCount>=124)
-    {
-      image(logo[2], 0, 0, width, height);
-    }
-    if (frameCount>=126)
-    {
-      image(logo[3], 0, 0, width, height);
-    }
-    if (frameCount>=127)
-    {
-      image(logo[4], 0, 0, width, height);
-    }
-    if (frameCount>=170)
-    {
-       
-      scene = 1;
-    } 
+
+  if (frameCount>=120)
+  {
+    image(logo[0], 0, 0, width, height);
+  }
+  if (frameCount>=122)
+  {
+    image(logo[1], 0, 0, width, height);
+  }
+  if (frameCount>=124)
+  {
+    image(logo[2], 0, 0, width, height);
+  }
+  if (frameCount>=126)
+  {
+    image(logo[3], 0, 0, width, height);
+  }
+  if (frameCount>=127)
+  {
+    image(logo[4], 0, 0, width, height);
+  }
+  if (frameCount>=170)
+  {
+
+    scene = 1;
+  }
+}
+void howtoplayscreen() {
+  background(0);
+  fill(255);
+  textSize(60);
+  text("HOW TO PLAY", displayWidth/2, displayHeight/2*.25);
+  textSize(32);
+  text("SINGLE PLAYER: DRAG THE RIGHT PLATFORM TO MOVE BOTH", displayWidth/2, displayHeight/2*.5);
+  text("TWO PLAYER: PLAYER ONE DRAG THE LEFT PLATFORM, PLAYER TWO DRAG THE RIGHT PLATFORM", displayWidth/2, displayHeight/2*.75);
+  text("PLAY AGAINST AI: DRAG THE RIGHT PLATFORM AND PLAY AGAINST AN AI", displayWidth/2, displayHeight/2);
+  text("CRAZY MODE: ENABLE POWERUPS (SLOWDOWN, PLATFORM SIZE CHANGE, ETC.)", displayWidth/2, displayHeight/2*1.25);
 }

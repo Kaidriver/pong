@@ -1,7 +1,7 @@
 public class powerUp {
   
-   private float x, y, w, h;
- 
+   private float x, y, w, h,start,currentspd;
+   private boolean timer;
    private int type;
    private color platColor = color(255,255,255);
    public powerUp( float x,float y, float w, float h, int type) {
@@ -34,14 +34,17 @@ public class powerUp {
    }
    
    public boolean collisions () {
+     
      for (int i = 0; i < balls.size(); i++) {
        ball ballz = balls.get(i);
         if (ballz.x - ballz.size/2 < x + (w/2) && ballz.x + ballz.size/2 > x - (w/2) && ballz.y - ballz.size/2 < y + (h/2) && ballz.y + ballz.size/2 > y - (h/2)) {
            
            fill(255);
            if (type == 1) {
+             start = frameCount;
+             currentspd = ballz.speed;
              ballz.speed *= .5;  
-             ballz.speed *= .5;
+             timer = true;
            } else if (type == 2) {
              balls.add(new ball(x, y, 8, 3, 25,1));
            } else if (type == 3) {
@@ -58,8 +61,11 @@ public class powerUp {
            
            return true;
         }  
-       
+       if (frameCount - start  > 600 && timer) {
+          ballz.speed = currentspd;
+        }
      }
      return false;
    }
+  
 }
