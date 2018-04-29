@@ -42,6 +42,9 @@ float backbtnx;
 float backbtny;
 float backbtnw;
 float backbtnh;
+float currentspd;
+boolean timer;
+float start;
 int scorelimit = 5;
 int highscore = 1;
 float px, py;
@@ -178,7 +181,7 @@ public void draw() {
         powerups.remove(i);
       }
     }
-  } else if (scene == 0) {
+  } else if (scene == 10) {
     background(0);
     textSize(60);
     text("GAMEOVER!", displayWidth/2, displayHeight/2*.5);
@@ -457,7 +460,16 @@ void powerup() {
       px = random(200, 1000);
       py = random (200, 600);
       powerups.add(new powerUp(px, py, 80, 80, 1));
+     
     }  
+  }
+  if (timer) {
+    if (frameCount - start  > 600 && timer) {
+      for (int i = 0; i < balls.size(); i++) {
+        ball ballz = balls.get(i);
+        ballz.speed = currentspd;
+      }
+    }
   }
 }
 void createLogo()
