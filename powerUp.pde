@@ -34,7 +34,7 @@ public class powerUp {
 
   public boolean collisions () {
      
-    text(currentspd, displayWidth/2, displayHeight/2);
+ 
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       if (ballz.x - ballz.size/2 < x + (w/2) && ballz.x + ballz.size/2 > x - (w/2) && ballz.y - ballz.size/2 < y + (h/2) && ballz.y + ballz.size/2 > y - (h/2)) {

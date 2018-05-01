@@ -455,13 +455,28 @@ void powerup() {
 
   if (millis()%250 == 0) {
 
-    int prob = int(random(2));
+    int prob = int(random(10));
     if (prob == 1) {
       px = random(200, 1000);
       py = random (200, 600);
       powerups.add(new powerUp(px, py, 80, 80, 1));
-     
-    }  
+    } else if (prob == 2) {
+      px = random(200, 1000);
+      py = random (200, 600);
+      powerups.add(new powerUp(px, py, 80, 80, 2));
+    } else if (prob == 3) {
+      px = random(200, 1000);
+      py = random (200, 600);
+      powerups.add(new powerUp(px, py, 80, 80, 3));
+    } else if (prob == 4) {
+      px = random(200, 1000);
+      py = random (200, 600);
+      powerups.add(new powerUp(px, py, 80, 80, 4));
+    } else if (prob == 5) {
+      px = random(200, 1000);
+      py = random (200, 600);
+      powerups.add(new powerUp(px, py, 80, 80, 5));
+    }
   }
   if (timer) {
     if (frameCount - start  > 600 && timer) {
@@ -504,6 +519,13 @@ void createLogo()
 void howtoplayscreen() {
   background(0);
   fill(255);
+  textSize(48);
+  text("Back", displayWidth/5.75, displayHeight/8.25);
+  fill(0);
+  stroke(255);
+  rect(backbtnx, backbtny, backbtnw, backbtnh);
+  fill(255);
+  triangle(backbtnx-backbtnw/2, backbtny, backbtnx+backbtnw/2, backbtny-backbtnh/2, backbtnx+backbtnw/2, backbtny+backbtnh/2);
   textSize(60);
   text("HOW TO PLAY", displayWidth/2, displayHeight/2*.25);
   textSize(32);
@@ -511,4 +533,7 @@ void howtoplayscreen() {
   text("TWO PLAYER: PLAYER ONE DRAG THE LEFT PLATFORM, PLAYER TWO DRAG THE RIGHT PLATFORM", displayWidth/2, displayHeight/2*.75);
   text("PLAY AGAINST AI: DRAG THE RIGHT PLATFORM AND PLAY AGAINST AN AI", displayWidth/2, displayHeight/2);
   text("CRAZY MODE: ENABLE POWERUPS (SLOWDOWN, PLATFORM SIZE CHANGE, ETC.)", displayWidth/2, displayHeight/2*1.25);
+  if (mouseX < backbtnx + (backbtnw/2) && mouseX > backbtnx - (backbtnw/2) && mouseY < backbtny + (backbtnh/2) && mouseY > backbtny - (backbtnh/2)) {
+    scene = 1;
+  }
 }
