@@ -1,9 +1,21 @@
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.content.res.AssetFileDescriptor;
 import android.content.Context;
 import android.app.Activity;
 import android.view.MotionEvent; 
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.media.AudioManager;
 
+
+SoundPool soundPool;
+HashMap<Object, Object> soundPoolMap;
+Activity act;
+Context cont;
+AssetFileDescriptor afd1, afd2;
+int boopH, boopL;
+int streamId;
 ball menub;
 platform player1; 
 platform player2;  
@@ -50,7 +62,7 @@ int highscore = 1;
 float px, py;
 boolean crazyMode = false;
 boolean loop = true;
-float speedChange = 1.01;
+float speedChange = 1.025;
 int scene = 0;
 PImage slowdown;
 PImage addBall;
@@ -58,11 +70,14 @@ PImage removeBall;
 PImage expand;
 PImage shrink;
 PImage [] logo;
+int x = 0;
+int y = 0;
+ 
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
   orientation(LANDSCAPE);
-  frameRate(60);
+  frameRate(1000);
   size(displayWidth, displayHeight);
   button1x = displayWidth/4*1.2;
   button1y = displayHeight/4*2;
@@ -93,8 +108,9 @@ public void setup() {
   backbtnw = displayWidth*.044;
   backbtnh = displayHeight*.074;
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.0028, displayWidth*.013, 1);
-  player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.01, displayHeight*.185);
-  player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.01, displayHeight*.185);
+  player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185);
+  player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185);
+
   rectMode(CENTER);
   textSize(48);
   background(0);
@@ -106,17 +122,36 @@ public void setup() {
   removeBall = loadImage("removeball.png");
   expand = loadImage("expand.png");
   shrink = loadImage("shrink.png");
+
   logo = new PImage[5];
   for (int i = 0; i < logo.length; i++) {
     String filename = "startScreen" + i + ".gif";
     logo[i] = loadImage(filename);
   }
+  act = this.getActivity();
+  cont = act.getApplicationContext();
+ 
+  // load up the files
+  try {
+    afd1 = cont.getAssets().openFd("boopH.wav");
+    afd2 = cont.getAssets().openFd("boopL.wav");
+  } 
+  catch(IOException e) {
+    println("error loading files:" + e);
+  }
+ 
+  // create the soundPool HashMap - apparently this constructor is now depracated?
+  soundPool = new SoundPool(12, AudioManager.STREAM_MUSIC, 0);
+  soundPoolMap = new HashMap<Object, Object>(2);
+  soundPoolMap.put(boopH, soundPool.load(afd1, 1));
+  soundPoolMap.put(boopL, soundPool.load(afd2, 1));
   image(logo[0], 0, 0, width, height);
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
   loadData();
 }
 public void draw() {
+ 
   saveData();
   if (scene == 0) {
     createLogo();
@@ -257,16 +292,8 @@ public void draw() {
 }
 
 public void menu() {
+
   background(0);
-  menub.display();
-  menub.move();
-
-  if (menub.y + (menub.size/2) > height || menub.y-(menub.size/2) < 0) {
-    menub.dy*= -1;
-  } else if (menub.x + (menub.size/2) > width || menub.x-(menub.size/2) < 0) {
-    menub.dx*= -1;
-  }
-
   textAlign(CENTER);
   textSize(128);
   text("PONG", displayWidth/2, displayHeight/2*.5f);
@@ -307,9 +334,9 @@ public void menu() {
 
 public void reset() {
   balls.clear();
-  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1));
+  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.75));
   powerups.clear();
-  speedChange = 1.01 ;
+  speedChange = 1.05;
   player1.y = displayHeight/2;
   player2.y = displayHeight/2;
   player1.h = displayHeight*.185;
@@ -451,6 +478,11 @@ public boolean surfaceTouchEvent(MotionEvent me) {
   }
   return super.surfaceTouchEvent(me);
 }
+void playSound(int soundID) {
+   // play(int soundID, float leftVolume, float rightVolume, int priority, int loop, float rate)
+   soundPool.stop(streamId);
+   streamId = soundPool.play(soundID, 1.0, 1.0, 1, 0, 1f);
+}
 void powerup() {
 
   if (millis()%250 == 0) {
@@ -490,30 +522,51 @@ void powerup() {
 void createLogo()
 {
 
-  if (frameCount>=120)
-  {
-    image(logo[0], 0, 0, width, height);
-  }
-  if (frameCount>=122)
-  {
-    image(logo[1], 0, 0, width, height);
-  }
-  if (frameCount>=124)
-  {
-    image(logo[2], 0, 0, width, height);
-  }
-  if (frameCount>=126)
-  {
-    image(logo[3], 0, 0, width, height);
-  }
-  if (frameCount>=127)
-  {
-    image(logo[4], 0, 0, width, height);
-  }
-  if (frameCount>=170)
-  {
+    if (height>width)
+    {
+    background(0);
+    float widthL = width * .7142857;
+    image(logo[0], width * .14285714, height * .001, widthL, .7 *widthL );
 
-    scene = 1;
+    if (frameCount>=122)
+    {
+      image(logo[1], 0, 0, width, height);
+    }
+    if (frameCount>=126)
+    {
+
+      image(logo[2], 0, 0, width, height);
+      image(logo[0], width * .14285714, height * .001, widthL, .7 *widthL );
+      image(logo[4], width*.1428571429, height*.4, width*.7142857143, width*.7142857143);
+    }
+    if (frameCount>=170)
+    {
+      scene = 1;
+    }
+  } else
+  {
+    background(0);
+    float widthL = width * .5;
+    image(logo[0], width * .25, height * .001, widthL, .7 *widthL );
+
+    if (frameCount>=122)
+    {
+      image(logo[1], 0, 0, width, height);
+    }
+    if (frameCount>=126)
+    {
+
+      image(logo[2], 0, 0, width, height);
+      //words
+      image(logo[0], width * .25, height * .001, widthL, .7 *widthL );
+      //logos
+      image(logo[4], width*.359375, height*.45, height*.45, height*.45);
+    }
+    if (frameCount>=170)
+    {
+
+      scene = 1;
+    }
   }
 }
 void howtoplayscreen() {

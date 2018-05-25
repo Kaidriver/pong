@@ -26,6 +26,7 @@ public class ball {
   }
   public void collisions() {
     if(y + (size/2) > height || y-(size/2) < 0) {
+       playSound(2);
       dy*= -1;
     }
     if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y - player1.h/2 && y - size/2 < player1.y - player1.h/8*3)) { 
@@ -37,6 +38,7 @@ public class ball {
       } else {
          dy = 12;
       }  
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y - player1.h/8*3 && y - size/2 < player1.y - player1.h/8*2)) {  
@@ -48,6 +50,7 @@ public class ball {
       } else {
          dy = 8;
       } 
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y - player1.h/8*2 && y - size/2 < player1.y - player1.h/8)) {
@@ -59,6 +62,7 @@ public class ball {
       } else {
          dy = 4;
       }
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y - player1.h/8 && y - size/2 < player1.y + player1.h/8)) {
@@ -70,6 +74,7 @@ public class ball {
       } else {
          dy = 1;
       }  
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y + player1.h/8 && y - size/2 < player1.y + player1.h/8*2)) {
@@ -81,6 +86,7 @@ public class ball {
       } else {
          dy = 4;
       }   
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y + player1.h/8*2 && y - size/2 < player1.y + player1.h/8*3)) {
@@ -92,6 +98,7 @@ public class ball {
       } else {
          dy = 8;
       } 
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y + player1.h/8*3 && y - size/2 < player1.y + player1.h/2)) {
@@ -103,6 +110,7 @@ public class ball {
       } else {
          dy = 12;
       }   
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } 
@@ -114,7 +122,8 @@ public class ball {
          dy = -12;
       } else {
          dy = 12;
-      }  
+      }
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x + (size/2) >= player2.x-player2.w/2 &&  x <= player2.x + player2.w/2 && (y + size/2 > player2.y - player2.h/8*3 && y - size/2 < player2.y - player2.h/8*2)) {
@@ -126,6 +135,7 @@ public class ball {
       } else {
          dy = 8;
       }  
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x + (size/2) >= player2.x-player2.w/2 &&  x <= player2.x + player2.w/2 && (y + size/2 > player2.y - player2.h/8 && y - size/2 < player2.y + player2.h/8)) {
@@ -138,6 +148,7 @@ public class ball {
       } else {
          dy = 4;
       }  
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x + (size/2) >= player2.x-player2.w/2 &&  x <= player2.x + player2.w/2 && (y + size/2 > player2.y - player2.h/8 && y - size/2 < player2.y + player2.h/8)) {
@@ -149,6 +160,7 @@ public class ball {
       } else {
          dy = 1;
       }  
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x + (size/2) >= player2.x-player2.w/2 &&  x <= player2.x + player2.w/2 && (y + size/2 > player2.y + player2.h/8 && y - size/2 < player2.y + player2.h/8*2)) {
@@ -160,7 +172,8 @@ public class ball {
          dy = -4;
       } else {
          dy = 4;
-      }    
+      }  
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x + (size/2) >= player2.x-player2.w/2 &&  x <= player2.x + player2.w/2 && (y + size/2 > player2.y + player2.h/8*2 && y - size/2 < player2.y + player2.h/8*3)) {
@@ -172,7 +185,8 @@ public class ball {
          dy = -8;
       } else {
          dy = 8;
-      }    
+      }   
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     } else if (x + (size/2) >= player2.x-player2.w/2 &&  x <= player2.x + player2.w/2 && (y + size/2 > player2.y - player2.h/8*3 && y - size/2 < player2.y + player2.h/2)) {
@@ -184,13 +198,14 @@ public class ball {
          dy = -12;
       } else {
          dy = 12;
-      }   
+      }  
+       playSound(1);
       speed *= speedChange;
       soloscore += 1;
     }
   }
   public void win () {
-    if (x < 0) {
+    if (x + size/2 < 0) {
       p2score += 1;
       reset();
       int prob = PApplet.parseInt(random(2));
@@ -198,7 +213,7 @@ public class ball {
        dx *= -1;
       } 
       delay(500);
-    } else if (x > width){
+    } else if (x - size/2 > width){
       p1score += 1;
       reset();
       int prob = PApplet.parseInt(random(2));
