@@ -15,7 +15,7 @@ public class platform {
    }
    
    public void bounds() {
-     float temp = h/2;
-     y = y-temp < 0 ? temp : y + temp/2 > height ? height-temp : y;   
+     // float temp = h/2;
+     // y = y-temp < 0 ? temp : y + temp/2 > height ? height-temp : y;   
    }
 }

@@ -19,6 +19,7 @@ int streamId;
 ball menub;
 platform player1; 
 platform player2;  
+
 static final String CONFIG_FILE = "save.txt";
 boolean [] keys = new boolean[128]; 
 ArrayList <powerUp> powerups = new ArrayList <powerUp> ();
@@ -77,7 +78,7 @@ int y = 0;
 public void setup() {
 
   orientation(LANDSCAPE);
-  frameRate(1000);
+  frameRate(60);
   size(displayWidth, displayHeight);
   button1x = displayWidth/4*1.2;
   button1y = displayHeight/4*2;
@@ -110,12 +111,11 @@ public void setup() {
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.0028, displayWidth*.013, 1);
   player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185);
   player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185);
-
+  
   rectMode(CENTER);
   textSize(48);
   background(0);
-  PFont font = loadFont("ShowcardGothic-Reg-48.vlw");
-  textFont(font);
+
 
   slowdown = loadImage("slowdown2.png");
   addBall = loadImage("add.png");
@@ -151,12 +151,11 @@ public void setup() {
   loadData();
 }
 public void draw() {
- 
   saveData();
   if (scene == 0) {
     createLogo();
   } else if (scene == 1) {
-    reset();
+   // reset();
     scorelimit = 5;
     menu();
   } else if (scene == 2) {
@@ -176,8 +175,8 @@ public void draw() {
 
     player1.display();
     player2.display();
-    player1.bounds();
-    player2.bounds();
+    
+    
     aiMovement();
     platBoundary();
     if (crazyMode) {
@@ -192,6 +191,7 @@ public void draw() {
     }
   } else if (scene == 3) {
     background(0);
+    text(frameRate, 200, 200);
     text(soloscore, displayWidth/2, 30);
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
@@ -202,8 +202,8 @@ public void draw() {
     }
     player1.display();
     player2.display();
-    player1.bounds();
-    player2.bounds();
+    
+    
 
     player1.y = player2.y;
     platBoundary();
@@ -266,8 +266,8 @@ public void draw() {
 
     player1.display();
     player2.display();
-    player1.bounds();
-    player2.bounds();
+    
+    
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
@@ -292,51 +292,41 @@ public void draw() {
 }
 
 public void menu() {
-
   background(0);
+  player1.display();
+  player2.display();
+  aiMovement();
+  menub.display();
+  menub.move();
+  menub.collisions();
   textAlign(CENTER);
   textSize(128);
   text("PONG", displayWidth/2, displayHeight/2*.5f);
+  text(frameRate, 200, 200);
   fill(0);
   stroke(255);
   rect(button1x, button1y, buttonw, buttonh);
-  fill(255);
-  textSize(48);
-  text("Play against ai", button1x, button1y);
-  fill(0);
-  stroke(255);
   rect(button2x, button2y, buttonw, buttonh);
-  fill(255);
-  textSize(48);
-  text("Play solo", button2x, button2y);
-  fill(0);
-  stroke(255);
   rect(button4x, button4y, buttonw, buttonh);
-  fill(255);
-  textSize(48);
-  text("Two Player", button4x, button4y);
-  fill(0);
-  stroke(255);
   rect(button5x, button5y, buttonw, buttonh);
   fill(255);
   textSize(48);
+  text("Play against ai", button1x, button1y);
+  text("Play solo", button2x, button2y);
+  text("Two Player", button4x, button4y);
   text("How to Play", button5x, button5y);
-  if (mouseX < button1x + (buttonw/2) && mouseX > button1x - (buttonw/2) && mouseY < button1y + (buttonh/2) && mouseY > button1y - (buttonh/2)) {
-    scene = 2;
-  } else if (mouseX < button2x + (buttonw/2) && mouseX > button2x - (buttonw/2) && mouseY < button2y + (buttonh/2) && mouseY > button2y - (buttonh/2)) {
-    scene = 3;
-  } else if (mouseX < button4x + (buttonw/2) && mouseX > button4x - (buttonw/2) && mouseY < button4y + (buttonh/2) && mouseY > button4y - (buttonh/2)) {
-    scene = 7;
-  } else if (mouseX < button5x + (buttonw/2) && mouseX > button5x - (buttonw/2) && mouseY < button5y + (buttonh/2) && mouseY > button5y - (buttonh/2)) {
-    scene = 9;
-  }
+ 
+
+ 
+  
+  //noLoop();
 }
 
 public void reset() {
   balls.clear();
-  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.75));
+  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.55));
   powerups.clear();
-  speedChange = 1.05;
+  speedChange = 1.025;
   player1.y = displayHeight/2;
   player2.y = displayHeight/2;
   player1.h = displayHeight*.185;
@@ -350,12 +340,24 @@ public void reset() {
 }
 
 public void aiMovement() {
+  if (scene == 1) {
+    if (player1.y > menub.y) {
+      player1.y -= 2;
+      player2.y -= 2;
+     
+    } else if (player1.y < menub.y) {
+      player1.y += 2;
+      player2.y += 2;
+    }
+  }
   for (int i = 0; i < balls.size(); i++) {
     ball ballz = balls.get(i);
     if (player1.y > ballz.y) {
       player1.y -= 10;
+     
     } else if (player1.y < ballz.y) {
       player1.y += 10;
+       
     }
   }
 }
@@ -367,6 +369,7 @@ public void platBoundary() {
     player2.x = displayWidth-20;
   }
 }
+
 void select() {
   background(0);
   textAlign(CENTER);
@@ -412,7 +415,7 @@ void select() {
   fill(255);
   textSize(48);
   text("Play", button3x, button3y);
-
+ 
   if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
     if (scene == 7) {
       scene = 8;
@@ -436,6 +439,18 @@ void mousePressed() {
   } else if (mouseX < arrow4x + (arrow2w/2) && mouseX > arrow4x - (arrow2w/2) && mouseY < arrow4y + (arrow2h/2) && mouseY > arrow4y - (arrow2h/2)) {
 
     crazyMode = true;
+  }
+  if (scene == 1) {
+    //loop();
+    if (mouseX < button1x + (buttonw/2) && mouseX > button1x - (buttonw/2) && mouseY < button1y + (buttonh/2) && mouseY > button1y - (buttonh/2)) {
+      scene = 2;
+    } else if (mouseX < button2x + (buttonw/2) && mouseX > button2x - (buttonw/2) && mouseY < button2y + (buttonh/2) && mouseY > button2y - (buttonh/2)) {
+      scene = 3;
+    } else if (mouseX < button4x + (buttonw/2) && mouseX > button4x - (buttonw/2) && mouseY < button4y + (buttonh/2) && mouseY > button4y - (buttonh/2)) {
+      scene = 7;
+    } else if (mouseX < button5x + (buttonw/2) && mouseX > button5x - (buttonw/2) && mouseY < button5y + (buttonh/2) && mouseY > button5y - (buttonh/2)) {
+      scene = 9;
+    }
   }
 }
 
@@ -463,14 +478,14 @@ public boolean surfaceTouchEvent(MotionEvent me) {
   for (int i=0; i < numTouches; i++) { 
     int pointerId = me.getPointerId(i);
     if (scene == 3) {
-      if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200) {
+      if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
         player2.y = me.getY(i);
       }
     } else {
-      if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200) {
+      if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200 && me.getY(i) < displayHeight - player1.h/2 && me.getY(i) > player1.h/2) {
 
         player1.y = me.getY(i);
-      } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200) {
+      } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
 
         player2.y = me.getY(i);
       }
