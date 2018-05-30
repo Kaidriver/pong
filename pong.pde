@@ -108,7 +108,7 @@ public void setup() {
   backbtny = displayHeight/9;
   backbtnw = displayWidth*.044;
   backbtnh = displayHeight*.074;
-  menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.0028, displayWidth*.013, 1);
+  menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 1);
   player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185);
   player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185);
   
@@ -154,9 +154,13 @@ public void draw() {
   saveData();
   if (scene == 0) {
     createLogo();
-  } else if (scene == 1) {
-   // reset();
-    scorelimit = 5;
+  } else if (scene == 99) {
+     scorelimit = 5;
+     reset();
+     scene = 1;
+  } 
+  else if (scene == 1) {
+   
     menu();
   } else if (scene == 2) {
     select();
@@ -191,6 +195,7 @@ public void draw() {
     }
   } else if (scene == 3) {
     background(0);
+    ;
     text(frameRate, 200, 200);
     text(soloscore, displayWidth/2, 30);
     for (int i = 0; i < balls.size(); i++) {
@@ -229,7 +234,7 @@ public void draw() {
     textSize(48);
     text("Main Menu", button3x, button3y);
     if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
-      scene = 1;
+      scene = 99;
     }
   } else if (scene == 4) {
     background(0);
@@ -255,7 +260,7 @@ public void draw() {
     textSize(48);
     text("Main Menu", button3x, button3y);
     if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
-      scene = 1;
+      scene = 99;
     }
   } else if (scene == 7) {
     select();
@@ -293,12 +298,13 @@ public void draw() {
 
 public void menu() {
   background(0);
-  player1.display();
-  player2.display();
-  aiMovement();
   menub.display();
   menub.move();
   menub.collisions();
+  menub.gameover();
+  player1.display();
+  player2.display();
+  aiMovement();
   textAlign(CENTER);
   textSize(128);
   text("PONG", displayWidth/2, displayHeight/2*.5f);
@@ -341,23 +347,32 @@ public void reset() {
 
 public void aiMovement() {
   if (scene == 1) {
-    if (player1.y > menub.y) {
-      player1.y -= 2;
-      player2.y -= 2;
-     
-    } else if (player1.y < menub.y) {
-      player1.y += 2;
-      player2.y += 2;
-    }
-  }
-  for (int i = 0; i < balls.size(); i++) {
-    ball ballz = balls.get(i);
-    if (player1.y > ballz.y) {
-      player1.y -= 10;
-     
-    } else if (player1.y < ballz.y) {
-      player1.y += 10;
+    if (menub.dx < 0) {
+        if (menub.y > player1.y) {
+          player1.y += menub.y - player1.y;
+        } else if (menub.y < player1.y) {
+          player1.y -= player1.y - menub.y;
+        } else {
+          player1.y += 0;
+        }
+    } else 
+        if (menub.y > player2.y && menub.dx > 0) {
+          player2.y += menub.y - player2.y;
+        } else if (menub.y < player2.y) {
+          player2.y -= player2.y - menub.y;
+        } else {
+          player2.y += 0;
+        }
+    } else {
+    for (int i = 0; i < balls.size(); i++) {
+      ball ballz = balls.get(i);
+      if (player1.y > ballz.y) {
+        player1.y -= 10;
        
+      } else if (player1.y < ballz.y) {
+        player1.y += 10;
+         
+      }
     }
   }
 }
@@ -423,7 +438,7 @@ void select() {
       scene = 6;
     }
   } else if (mouseX < backbtnx + (backbtnw/2) && mouseX > backbtnx - (backbtnw/2) && mouseY < backbtny + (backbtnh/2) && mouseY > backbtny - (backbtnh/2)) {
-    scene = 1;
+    scene = 99;
   }
 }
 void mousePressed() {
@@ -481,7 +496,7 @@ public boolean surfaceTouchEvent(MotionEvent me) {
       if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
         player2.y = me.getY(i);
       }
-    } else {
+    } else if (scene != 1){
       if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200 && me.getY(i) < displayHeight - player1.h/2 && me.getY(i) > player1.h/2) {
 
         player1.y = me.getY(i);
@@ -556,7 +571,7 @@ void createLogo()
     }
     if (frameCount>=170)
     {
-      scene = 1;
+      scene = 99;
     }
   } else
   {
@@ -580,7 +595,7 @@ void createLogo()
     if (frameCount>=170)
     {
 
-      scene = 1;
+      scene = 99;
     }
   }
 }
@@ -602,6 +617,7 @@ void howtoplayscreen() {
   text("PLAY AGAINST AI: DRAG THE RIGHT PLATFORM AND PLAY AGAINST AN AI", displayWidth/2, displayHeight/2);
   text("CRAZY MODE: ENABLE POWERUPS (SLOWDOWN, PLATFORM SIZE CHANGE, ETC.)", displayWidth/2, displayHeight/2*1.25);
   if (mouseX < backbtnx + (backbtnw/2) && mouseX > backbtnx - (backbtnw/2) && mouseY < backbtny + (backbtnh/2) && mouseY > backbtny - (backbtnh/2)) {
-    scene = 1;
+    scene = 99;
   }
 }
+ 

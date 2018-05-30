@@ -228,7 +228,13 @@ public class ball {
   }
   public void gameover() {
     if (x +(size/2) < 0 || x - (size/2) > displayWidth) {
+      if (scene == 1) {
+        x = displayWidth/2;
+        y = displayHeight/2;
+      } else {
         scene = 10;
+      }
+        
     }
     if (soloscore > highscore) {
       highscore = soloscore;
