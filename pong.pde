@@ -331,6 +331,7 @@ public void menu() {
 public void reset() {
   balls.clear();
   balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.55));
+  menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 1);
   powerups.clear();
   speedChange = 1.025;
   player1.y = displayHeight/2;
@@ -339,7 +340,7 @@ public void reset() {
   player2.h = displayHeight*.185;
   soloscore = 0;
 
-  if (scene == 1) {
+  if (scene == 99) {
     p1score = 0;
     p2score = 0;
   }
