@@ -65,6 +65,7 @@ boolean crazyMode = false;
 boolean loop = true;
 float speedChange = 1.025;
 int scene = 0;
+int projScene;
 PImage slowdown;
 PImage addBall;
 PImage removeBall;
@@ -108,6 +109,7 @@ public void setup() {
   backbtny = displayHeight/9;
   backbtnw = displayWidth*.044;
   backbtnh = displayHeight*.074;
+  projScene = 1;
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 1);
   player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185);
   player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185);
@@ -157,10 +159,9 @@ public void draw() {
   } else if (scene == 99) {
      scorelimit = 5;
      reset();
-     scene = 1;
+     
   } 
   else if (scene == 1) {
-   
     menu();
   } else if (scene == 2) {
     select();
@@ -321,11 +322,6 @@ public void menu() {
   text("Play solo", button2x, button2y);
   text("Two Player", button4x, button4y);
   text("How to Play", button5x, button5y);
- 
-
- 
-  
-  //noLoop();
 }
 
 public void reset() {
@@ -344,6 +340,7 @@ public void reset() {
     p1score = 0;
     p2score = 0;
   }
+  scene = projScene;
 }
 
 public void aiMovement() {
@@ -434,11 +431,14 @@ void select() {
  
   if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
     if (scene == 7) {
-      scene = 8;
+      projScene = 8;
+      reset();
     } else {
-      scene = 6;
+      projScene = 6;
+      reset();
     }
   } else if (mouseX < backbtnx + (backbtnw/2) && mouseX > backbtnx - (backbtnw/2) && mouseY < backbtny + (backbtnh/2) && mouseY > backbtny - (backbtnh/2)) {
+    projScene = 1;
     scene = 99;
   }
 }
@@ -457,11 +457,13 @@ void mousePressed() {
     crazyMode = true;
   }
   if (scene == 1) {
-    //loop();
+
     if (mouseX < button1x + (buttonw/2) && mouseX > button1x - (buttonw/2) && mouseY < button1y + (buttonh/2) && mouseY > button1y - (buttonh/2)) {
       scene = 2;
     } else if (mouseX < button2x + (buttonw/2) && mouseX > button2x - (buttonw/2) && mouseY < button2y + (buttonh/2) && mouseY > button2y - (buttonh/2)) {
-      scene = 3;
+      projScene = 3;
+      reset();
+      
     } else if (mouseX < button4x + (buttonw/2) && mouseX > button4x - (buttonw/2) && mouseY < button4y + (buttonh/2) && mouseY > button4y - (buttonh/2)) {
       scene = 7;
     } else if (mouseX < button5x + (buttonw/2) && mouseX > button5x - (buttonw/2) && mouseY < button5y + (buttonh/2) && mouseY > button5y - (buttonh/2)) {
@@ -572,6 +574,7 @@ void createLogo()
     }
     if (frameCount>=170)
     {
+      projScene = 1;
       scene = 99;
     }
   } else
@@ -595,7 +598,7 @@ void createLogo()
     }
     if (frameCount>=170)
     {
-
+      projScene = 1;
       scene = 99;
     }
   }
@@ -618,6 +621,7 @@ void howtoplayscreen() {
   text("PLAY AGAINST AI: DRAG THE RIGHT PLATFORM AND PLAY AGAINST AN AI", displayWidth/2, displayHeight/2);
   text("CRAZY MODE: ENABLE POWERUPS (SLOWDOWN, PLATFORM SIZE CHANGE, ETC.)", displayWidth/2, displayHeight/2*1.25);
   if (mouseX < backbtnx + (backbtnw/2) && mouseX > backbtnx - (backbtnw/2) && mouseY < backbtny + (backbtnh/2) && mouseY > backbtny - (backbtnh/2)) {
+    projScene = 1;
     scene = 99;
   }
 }
