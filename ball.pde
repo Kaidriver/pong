@@ -27,6 +27,7 @@ public class ball {
   public void collisions() {
     if(y + (size/2) > height || y-(size/2) < 0) {
        playSound(2);
+       
       dy*= -1;
     }
     if (x - size/2 <= player1.x + player1.w/2 && x - size/2 >= player1.x - player1.w/2 && (y + size/2 > player1.y - player1.h/2 && y - size/2 < player1.y - player1.h/8*3)) { 
@@ -38,6 +39,7 @@ public class ball {
       } else {
          dy = 12;
       }  
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -50,6 +52,7 @@ public class ball {
       } else {
          dy = 8;
       } 
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -62,6 +65,7 @@ public class ball {
       } else {
          dy = 4;
       }
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -74,6 +78,7 @@ public class ball {
       } else {
          dy = 1;
       }  
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -86,6 +91,7 @@ public class ball {
       } else {
          dy = 4;
       }   
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -98,6 +104,7 @@ public class ball {
       } else {
          dy = 8;
       } 
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -110,6 +117,7 @@ public class ball {
       } else {
          dy = 12;
       }   
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -123,6 +131,7 @@ public class ball {
       } else {
          dy = 12;
       }
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -135,6 +144,7 @@ public class ball {
       } else {
          dy = 8;
       }  
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -148,6 +158,7 @@ public class ball {
       } else {
          dy = 4;
       }  
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -160,6 +171,7 @@ public class ball {
       } else {
          dy = 1;
       }  
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -173,6 +185,7 @@ public class ball {
       } else {
          dy = 4;
       }  
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -186,6 +199,7 @@ public class ball {
       } else {
          dy = 8;
       }   
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;
@@ -199,6 +213,7 @@ public class ball {
       } else {
          dy = 12;
       }  
+      bounced = true;
        playSound(1);
       speed *= speedChange;
       soloscore += 1;

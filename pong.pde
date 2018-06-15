@@ -57,6 +57,7 @@ float backbtnw;
 float backbtnh;
 float currentspd;
 boolean timer;
+float location;
 float start;
 int scorelimit = 5;
 int highscore = 1;
@@ -72,6 +73,8 @@ PImage removeBall;
 PImage expand;
 PImage shrink;
 PImage [] logo;
+boolean calculate;
+boolean bounced;
 int x = 0;
 int y = 0;
  
@@ -110,10 +113,11 @@ public void setup() {
   backbtnw = displayWidth*.044;
   backbtnh = displayHeight*.074;
   projScene = 1;
-  menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 1);
+  location = 0;
+  menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 2);
   player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185);
   player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185);
-  
+  calculate = true;
   rectMode(CENTER);
   textSize(48);
   background(0);
@@ -235,6 +239,7 @@ public void draw() {
     textSize(48);
     text("Main Menu", button3x, button3y);
     if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
+      projScene = 1;
       scene = 99;
     }
   } else if (scene == 4) {
@@ -261,6 +266,7 @@ public void draw() {
     textSize(48);
     text("Main Menu", button3x, button3y);
     if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
+      projScene = 1;
       scene = 99;
     }
   } else if (scene == 7) {
@@ -303,8 +309,8 @@ public void menu() {
   menub.move();
   menub.collisions();
   menub.gameover();
-  player1.display();
   player2.display();
+  player1.display();
   aiMovement();
   textAlign(CENTER);
   textSize(128);
@@ -327,7 +333,7 @@ public void menu() {
 public void reset() {
   balls.clear();
   balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.55));
-  menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 1);
+  menub = new ball(50, 50, 5, 1, displayWidth*.013, 10);
   powerups.clear();
   speedChange = 1.025;
   player1.y = displayHeight/2;
@@ -344,7 +350,53 @@ public void reset() {
 }
 
 public void aiMovement() {
-  if (scene == 1) {
+  
+  if (calculate) {
+    location = calculations();
+    calculate = false;
+  }
+   
+  
+   text(location, 300, 300);
+    text(menub.y, 300, 600);
+    text(str(calculate), 300, 900);
+    text(menub.dx, 600, 900);
+    if (scene == 1) {
+      if (menub.dx > 0) {
+        if (player2.y > location) {
+          player2.y -= 3;
+        } 
+        if (player2.y < location) {
+          player2.y += 3;
+        }
+      
+      } else if (menub.dx < 0) {
+        if (player1.y > location) {
+          player1.y -= 3;
+        } 
+        if (player1.y < location) {
+          player1.y += 3;
+        }
+        
+      }
+      if (bounced) {
+        calculate = true;
+        bounced = false;
+      }
+      
+    } else {
+    for (int i = 0; i < balls.size(); i++) {
+      ball ballz = balls.get(i);
+      if (player1.y > ballz.y) {
+        player1.y -= 10;
+       
+      } else if (player1.y < ballz.y) {
+        player1.y += 10;
+         
+      }
+    }
+      
+    /*
     if (menub.dx < 0) {
         if (menub.y > player1.y) {
           player1.y += menub.y - player1.y;
@@ -361,18 +413,37 @@ public void aiMovement() {
         } else {
           player2.y += 0;
         }
-    } else {
-    for (int i = 0; i < balls.size(); i++) {
-      ball ballz = balls.get(i);
-      if (player1.y > ballz.y) {
-        player1.y -= 10;
-       
-      } else if (player1.y < ballz.y) {
-        player1.y += 10;
-         
+        */
+  }
+}
+public float calculations () {
+  float destination = 0;
+  float bounceLocation = 0;
+  if (calculate) {
+    if (menub.dx < 0) {
+      if ((menub.dy/menub.dx)*(menub.x)+menub.y < 0) {
+        bounceLocation = -(menub.y)*(menub.dx/menub.dy);
+        destination = -(menub.dy/menub.dx)*(bounceLocation)+menub.y;
+      } else if ((menub.dy/menub.dx)*(menub.x)+menub.y > displayHeight) {
+        bounceLocation = (displayHeight - menub.y)*(menub.dx/menub.dy);
+        destination = -(menub.dy/menub.dx)*(bounceLocation)+ menub.y;
+      } else {
+        destination = (menub.dy/menub.dx)*(menub.x)+(displayHeight - menub.y);
+      }
+    } else if(menub.dx > 0) {
+      if ((menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y < 0) {
+        bounceLocation = -(menub.y)*(menub.dx/menub.dy);
+        destination = -(menub.dy/menub.dx)*(displayWidth - bounceLocation)+menub.y;
+      } else if ((menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y > displayHeight) {
+        bounceLocation = (displayHeight - menub.y)*(menub.dx/menub.dy);
+        destination = -(menub.dy/menub.dx)*(displayWidth - bounceLocation)+menub.y;
+      } else {
+        destination = (menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y;
       }
     }
+    
   }
+  return destination;
 }
 public void platBoundary() {
   if (player1.x < 10 || player1.x > 10) {
