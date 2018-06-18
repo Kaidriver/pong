@@ -333,7 +333,7 @@ public void menu() {
 public void reset() {
   balls.clear();
   balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.55));
-  menub = new ball(50, 350, 5, -2, displayWidth*.013, 10);
+  menub = new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.55);
   powerups.clear();
   speedChange = 1.025;
   player1.y = displayHeight/2;
@@ -364,18 +364,18 @@ public void aiMovement() {
     if (scene == 1) {
       if (menub.dx > 0) {
         if (player2.y > location) {
-          player2.y -= 3;
+          player2.y -= 5;
         } 
         if (player2.y < location) {
-          player2.y += 3;
+          player2.y += 5;
         }
       
       } else if (menub.dx < 0) {
         if (player1.y > location) {
-          player1.y -= 3;
+          player1.y -= 5;
         } 
         if (player1.y < location) {
-          player1.y += 3;
+          player1.y += 5;
         }
         
       }
@@ -421,14 +421,14 @@ public float calculations () {
   float bounceLocation = 0;
   if (calculate) {
     if (menub.dx < 0) {
-      if ((menub.dy/menub.dx)*(menub.x)+menub.y < 0) {
-        bounceLocation = -(menub.y*menub.dx)/menub.dy;
-        destination = -(menub.dy/menub.dx)*(bounceLocation)+menub.y;
-      } else if ((menub.dy/menub.dx)*(menub.x)+menub.y > displayHeight) {
-        bounceLocation = (displayHeight - menub.y)*(menub.dx/menub.dy);
-        destination = -(menub.dy/menub.dx)*(bounceLocation)+ menub.y;
+      if ((menub.dy/menub.dx)*(-menub.x)+menub.y < 0) {
+        bounceLocation = (menub.y*menub.dx)/menub.dy;
+        destination = -(menub.dy/menub.dx)*(-bounceLocation);
+      } else if ((menub.dy/menub.dx)*(-menub.x)+menub.y > displayHeight) {
+        bounceLocation = ((displayHeight - menub.y)*-(menub.dx))/menub.dy;
+        destination = -(menub.dy/menub.dx)*(-bounceLocation)+ displayHeight;
       } else {
-        destination = (menub.dy/menub.dx)*(menub.x)+(displayHeight - menub.y);
+        destination = (menub.dy/menub.dx)*(-menub.x)+ (menub.y);
       }
     } else if(menub.dx > 0) {
       if ((menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y < 0) {
