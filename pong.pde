@@ -184,8 +184,7 @@ public void draw() {
 
     player1.display();
     player2.display();
-    
-    
+
     aiMovement();
     platBoundary();
     if (crazyMode) {
@@ -336,6 +335,7 @@ public void reset() {
   menub = new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.55);
   powerups.clear();
   speedChange = 1.025;
+  calculate = true;
   player1.y = displayHeight/2;
   player2.y = displayHeight/2;
   player1.h = displayHeight*.185;
@@ -385,42 +385,50 @@ public void aiMovement() {
       }
       
     } else {
-    for (int i = 0; i < balls.size(); i++) {
-      ball ballz = balls.get(i);
-      if (player1.y > ballz.y) {
-        player1.y -= 10;
-       
-      } else if (player1.y < ballz.y) {
-        player1.y += 10;
-         
+      for (int i = 0; i < balls.size(); i++) {
+        ball ballz = balls.get(i);
+        if (ballz.dx < 0) {
+          if (player1.y > location) {
+            player1.y -= 5;
+          } 
+          if (player1.y < location) {
+            player1.y += 5;
+          }
+          
+        }
+        if (bounced) {
+          calculate = true;
+          bounced = false;
+        }
       }
-    }
+     }
       
-    /*
-    if (menub.dx < 0) {
-        if (menub.y > player1.y) {
-          player1.y += menub.y - player1.y;
-        } else if (menub.y < player1.y) {
-          player1.y -= player1.y - menub.y;
-        } else {
-          player1.y += 0;
-        }
-    } else 
-        if (menub.y > player2.y && menub.dx > 0) {
-          player2.y += menub.y - player2.y;
-        } else if (menub.y < player2.y) {
-          player2.y -= player2.y - menub.y;
-        } else {
-          player2.y += 0;
-        }
-        */
-  }
+    
+
+        
+  
 }
 public float calculations () {
   float destination = 0;
   float bounceLocation = 0;
   if (calculate) {
-    if (menub.dx < 0) {
+    if (scene == 6) {
+      for (int i = 0; i < balls.size(); i++) {
+        ball ballz = balls.get(i);
+        if (ballz.dx < 0) {
+            if ((ballz.dy/ballz.dx)*(-ballz.x)+ballz.y < 0) {
+              bounceLocation = (ballz.y*ballz.dx)/ballz.dy;
+              destination = -(ballz.dy/ballz.dx)*(-bounceLocation);
+            } else if ((ballz.dy/ballz.dx)*(-ballz.x)+ballz.y > displayHeight) {
+              bounceLocation = ((displayHeight - ballz.y)*-(ballz.dx))/ballz.dy;
+              destination = -(ballz.dy/ballz.dx)*(-bounceLocation)+ displayHeight;
+            } else {
+              destination = (ballz.dy/ballz.dx)*(-ballz.x)+ (ballz.y);
+            }
+          }
+        }
+    }
+    else if (menub.dx < 0) {
       if ((menub.dy/menub.dx)*(-menub.x)+menub.y < 0) {
         bounceLocation = (menub.y*menub.dx)/menub.dy;
         destination = -(menub.dy/menub.dx)*(-bounceLocation);
@@ -440,7 +448,7 @@ public float calculations () {
       } else {
         destination = (menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y;
       }
-    }
+    } 
     
   }
   return destination;
@@ -570,7 +578,7 @@ public boolean surfaceTouchEvent(MotionEvent me) {
       if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
         player2.y = me.getY(i);
       }
-    } else if (scene != 1){
+    } else if (scene != 1 || scene != 6){
       if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200 && me.getY(i) < displayHeight - player1.h/2 && me.getY(i) > player1.h/2) {
 
         player1.y = me.getY(i);
