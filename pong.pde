@@ -71,6 +71,7 @@ PImage slowdown;
 PImage addBall;
 PImage removeBall;
 PImage expand;
+float [] val;
 PImage shrink;
 PImage [] logo;
 boolean calculate;
@@ -352,30 +353,32 @@ public void reset() {
 public void aiMovement() {
   
   if (calculate) {
-    location = calculations();
+    val = calculations();
+    location = val[0];
     calculate = false;
   }
    
-  
+   text(val[1], 900, 300);
    text(location, 300, 300);
     text(menub.y, 300, 600);
+    text(menub.x, 1200, 300);
     text(str(calculate), 300, 900);
     text(menub.dx, 600, 900);
     if (scene == 1) {
       if (menub.dx > 0) {
         if (player2.y > location) {
-          player2.y -= 5;
+          player2.y -= 10;
         } 
         if (player2.y < location) {
-          player2.y += 5;
+          player2.y += 10;
         }
       
       } else if (menub.dx < 0) {
         if (player1.y > location) {
-          player1.y -= 5;
+          player1.y -= 10;
         } 
         if (player1.y < location) {
-          player1.y += 5;
+          player1.y += 10;
         }
         
       }
@@ -408,19 +411,20 @@ public void aiMovement() {
         
   
 }
-public float calculations () {
+public float [] calculations () {
   float destination = 0;
   float bounceLocation = 0;
+
   if (calculate) {
     if (scene == 6) {
       for (int i = 0; i < balls.size(); i++) {
         ball ballz = balls.get(i);
         if (ballz.dx < 0) {
             if ((ballz.dy/ballz.dx)*(-ballz.x)+ballz.y < 0) {
-              bounceLocation = (ballz.y*ballz.dx)/ballz.dy;
+              bounceLocation = displayWidth - (ballz.y*ballz.dx)/ballz.dy;
               destination = -(ballz.dy/ballz.dx)*(-bounceLocation);
             } else if ((ballz.dy/ballz.dx)*(-ballz.x)+ballz.y > displayHeight) {
-              bounceLocation = ((displayHeight - ballz.y)*-(ballz.dx))/ballz.dy;
+              bounceLocation = displayWidth - ((displayHeight - ballz.y)*-(ballz.dx))/ballz.dy;
               destination = -(ballz.dy/ballz.dx)*(-bounceLocation)+ displayHeight;
             } else {
               destination = (ballz.dy/ballz.dx)*(-ballz.x)+ (ballz.y);
@@ -430,10 +434,10 @@ public float calculations () {
     }
     else if (menub.dx < 0) {
       if ((menub.dy/menub.dx)*(-menub.x)+menub.y < 0) {
-        bounceLocation = (menub.y*menub.dx)/menub.dy;
+        bounceLocation = displayWidth - (menub.y*menub.dx)/menub.dy;
         destination = -(menub.dy/menub.dx)*(-bounceLocation);
       } else if ((menub.dy/menub.dx)*(-menub.x)+menub.y > displayHeight) {
-        bounceLocation = ((displayHeight - menub.y)*-(menub.dx))/menub.dy;
+        bounceLocation = displayWidth - ((displayHeight - menub.y)*-(menub.dx))/menub.dy;
         destination = -(menub.dy/menub.dx)*(-bounceLocation)+ displayHeight;
       } else {
         destination = (menub.dy/menub.dx)*(-menub.x)+ (menub.y);
@@ -451,7 +455,8 @@ public float calculations () {
     } 
     
   }
-  return destination;
+  float [] val = {destination, bounceLocation};
+  return val;
 }
 public void platBoundary() {
   if (player1.x < 10 || player1.x > 10) {
