@@ -63,6 +63,8 @@ float unpausebtnx;
 float unpausebtny;
 float unpausebtnw;
 float unpausebtnh;
+float pmenubtnx;
+float pmenubtny;
 float currentspd;
 boolean timer;
 float location;
@@ -83,6 +85,7 @@ float [] val;
 PImage shrink;
 PImage [] logo;
 boolean calculate;
+int prevScene;
 boolean bounced;
 int x = 0;
 int y = 0;
@@ -127,9 +130,11 @@ public void setup() {
   pausebtnh = displayWidth*.048;
   pausebtnw = displayHeight*.025;
   unpausebtnx = displayWidth/2;
-  unpausebtny = displayHeight*.7;
+  unpausebtny = displayHeight/2;
   unpausebtnw = displayWidth*.044;
   unpausebtnh = displayHeight*.074;
+  pmenubtnx = displayWidth/2;
+  pmenubtny = displayHeight*.7;
   projScene = 1;
   location = 0;
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 2);
@@ -219,7 +224,6 @@ public void draw() {
     }
   } else if (scene == 3) {
     background(0);
-    ;
     text(frameRate, 200, 200);
     text(soloscore, displayWidth/2, 30);
     for (int i = 0; i < balls.size(); i++) {
@@ -231,9 +235,7 @@ public void draw() {
     }
     player1.display();
     player2.display();
-    
-    
-
+    pause();
     player1.y = player2.y;
     platBoundary();
 
@@ -298,7 +300,7 @@ public void draw() {
     player1.display();
     player2.display();
     
-    
+    pause();
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
@@ -321,9 +323,12 @@ public void draw() {
     howtoplayscreen();
   } else if (scene == 11) {
      background(0);
-    text(p1score, displayWidth/10, 30);
-    text(p2score, displayWidth/10*9, 30);
-    
+    if (prevScene == 6 || prevScene == 8) {
+      text(p1score, displayWidth/10, 30);
+      text(p2score, displayWidth/10*9, 30);
+    } else {
+       text(soloscore, displayWidth/2, 30);
+    }
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
@@ -333,7 +338,7 @@ public void draw() {
     
     player1.display();
     player2.display();
-    unpause(6);
+    unpause(prevScene);
     platBoundary();
     if (crazyMode) {
       powerup();
@@ -757,16 +762,27 @@ void howtoplayscreen() {
 }
 void pause() {
   fill(255);
-  rect(pausebtnx-30.142, pausebtny-.1, pausebtnw-.1, pausebtnh-.1);
-  rect(pausebtnx+30.142, pausebtny-.1, pausebtnw-.1, pausebtnh-.1);
+  rect(pausebtnx-30.144, pausebtny, pausebtnw, pausebtnh);
+  rect(pausebtnx+30.142, pausebtny, pausebtnw, pausebtnh);
   if (mouseX < pausebtnx+30.142 + (pausebtnw/2) && mouseX > pausebtnx-30.142 - (pausebtnw/2) && mouseY < pausebtny + (pausebtnh/2) && mouseY > pausebtny - (pausebtnh/2)) {
+    prevScene = scene;
     scene = 11;
   }
 }
 void unpause(int dest) {
-  text("Paused", displayWidth/2, displayHeight/2);
+  text("Paused", displayWidth/2, displayHeight*.4);
   fill(255);
   triangle(unpausebtnx+unpausebtnw/2, unpausebtny, unpausebtnx-unpausebtnw/2, unpausebtny-unpausebtnh/2, unpausebtnx-unpausebtnw/2, unpausebtny+unpausebtnh/2);
+  fill(0);
+  stroke(255);
+  rect(pmenubtnx, pmenubtny, buttonw, buttonh);
+  fill(255);
+  textSize(48);
+  text("Main Menu", pmenubtnx, pmenubtny);
+  if (mouseX < pmenubtnx + (buttonw/2) && mouseX > pmenubtnx - (buttonw/2) && mouseY < pmenubtny + (buttonh/2) && mouseY > pmenubtny - (buttonh/2)) {
+     projScene = 1;
+     scene = 99;
+  }
   if (mouseX < unpausebtnx + (unpausebtnw/2) && mouseX > unpausebtnx - (unpausebtnw/2) && mouseY < unpausebtny + (unpausebtnh/2) && mouseY > unpausebtny - (unpausebtnh/2)) {
     scene = dest;
   }
