@@ -51,6 +51,10 @@ float arrow3x;
 float arrow3y;
 float arrow4x;
 float arrow4y;
+float arrow5x;
+float arrow5y;
+float arrow6x;
+float arrow6y;
 float backbtnx;
 float backbtny;
 float backbtnw;
@@ -90,7 +94,7 @@ boolean bounced;
 int x = 0;
 int y = 0;
 float last;
- 
+int aiMode;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
@@ -121,14 +125,18 @@ public void setup() {
   arrow3y = displayHeight/2*.57;
   arrow4x = displayWidth*.82;
   arrow4y = displayHeight/2*.57;
+  arrow5x = displayWidth*.69;
+  arrow5y = displayHeight*.12;
+  arrow6x = displayWidth*.835;
+  arrow6y = displayHeight*.12;
   backbtnx = displayWidth/10;
   backbtny = displayHeight/9;
   backbtnw = displayWidth*.044;
   backbtnh = displayHeight*.074;
   pausebtnx = displayWidth/2;
-  pausebtny = displayHeight*.07;
-  pausebtnh = displayWidth*.048;
-  pausebtnw = displayHeight*.025;
+  pausebtny = displayHeight*.085;
+  pausebtnh = displayWidth*.030;
+  pausebtnw = displayHeight*.011;
   unpausebtnx = displayWidth/2;
   unpausebtny = displayHeight/2;
   unpausebtnw = displayWidth*.044;
@@ -196,8 +204,8 @@ public void draw() {
    
     background(0);
     
-    text(p1score, displayWidth/10, 30);
-    text(p2score, displayWidth/10*9, 30);
+    text(p1score, displayWidth/10, displayHeight*.035);
+    text(p2score, displayWidth/10*9, displayHeight*.035);
     
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
@@ -225,7 +233,7 @@ public void draw() {
   } else if (scene == 3) {
     background(0);
     text(frameRate, 200, 200);
-    text(soloscore, displayWidth/2, 30);
+    text(soloscore, displayWidth/2, displayHeight*.035);
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
@@ -294,8 +302,8 @@ public void draw() {
     select();
   } else if (scene == 8) {
     background(0);
-    text(p1score, displayWidth/10, 30);
-    text(p2score, displayWidth/10*9, 30);
+    text(p1score, displayWidth/10, displayHeight*.035);
+    text(p2score, displayWidth/10*9, displayHeight*.035);
 
     player1.display();
     player2.display();
@@ -324,10 +332,10 @@ public void draw() {
   } else if (scene == 11) {
      background(0);
     if (prevScene == 6 || prevScene == 8) {
-      text(p1score, displayWidth/10, 30);
-      text(p2score, displayWidth/10*9, 30);
+      text(p1score, displayWidth/10, displayHeight*.035);
+      text(p2score, displayWidth/10*9, displayHeight*.035);
     } else {
-       text(soloscore, displayWidth/2, 30);
+       text(soloscore, displayWidth/2, displayHeight*.035);
     }
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
@@ -438,20 +446,36 @@ public void aiMovement() {
       }
       
     } else {
-      for (int i = 0; i < balls.size(); i++) {
-        ball ballz = balls.get(i);
-        if (ballz.dx < 0) {
-          if (player1.y > location) {
-            player1.y -= 5;
-          } 
-          if (player1.y < location) {
-            player1.y += 5;
+      if (aiMode == 1) {
+        for (int i = 0; i < balls.size(); i++) {
+          ball ballz = balls.get(i);
+          if (ballz.dx < 0) {
+            if (player1.y > ballz.y) {
+              player1.y -= 5;
+            } 
+            if (player1.y < ballz.y) {
+              player1.y += 5;
+            }
+            
           }
-          
         }
-        if (bounced) {
-          calculate = true;
-          bounced = false;
+      } else {
+          
+        for (int i = 0; i < balls.size(); i++) {
+          ball ballz = balls.get(i);
+          if (ballz.dx < 0) {
+            if (player1.y > location) {
+              player1.y -= 7;
+            } 
+            if (player1.y < location) {
+              player1.y += 7;
+            }
+            
+          }
+          if (bounced) {
+            calculate = true;
+            bounced = false;
+          }
         }
       }
      }
@@ -562,7 +586,27 @@ void select() {
   fill(255);
   textSize(48);
   text("Play", button3x, button3y);
- 
+  if(scene == 2) {
+    fill(255);
+    text("Ai Difficulty:", displayWidth/2, displayHeight/2*.3);
+    fill(0);
+    stroke(255);
+    rect(arrow5x, arrow5y, arrow1h, arrow1w);
+    fill(255);
+    triangle(arrow5x-arrow1w/2, arrow5y, arrow5x+arrow1w/2, arrow5y-arrow1h/2, arrow5x+arrow1w/2, arrow5y+arrow1h/2);
+    fill(0);
+    stroke(255);
+    rect(arrow6x, arrow6y, arrow1h, arrow1w);
+    fill(255);
+    triangle(arrow6x+arrow2w/2, arrow6y, arrow6x-arrow2w/2, arrow6y-arrow2h/2, arrow6x-arrow2w/2, arrow6y+arrow2h/2);
+    if (aiMode == 1) {
+      text("Easy", displayWidth*.763, displayHeight/2*.265);
+    } else if (aiMode == 2) {
+      text("Medium", displayWidth*.763, displayHeight/2*.265);
+    } else {
+      text("Hard", displayWidth*.763, displayHeight/2*.265);
+    }
+  }
   if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
     if (scene == 7) {
       projScene = 8;
@@ -576,7 +620,7 @@ void select() {
     scene = 99;
   }
 }
-void mousePressed(MouseEvent evt) {
+void mousePressed() {
   
   if (mouseX < arrow1x + (arrow1w/2) && mouseX > arrow1x - (arrow1w/2) && mouseY < arrow1y + (arrow1h/2) && mouseY > arrow1y - (arrow1h/2)) {
     if (scorelimit > 0) {
@@ -590,6 +634,18 @@ void mousePressed(MouseEvent evt) {
   } else if (mouseX < arrow4x + (arrow2w/2) && mouseX > arrow4x - (arrow2w/2) && mouseY < arrow4y + (arrow2h/2) && mouseY > arrow4y - (arrow2h/2)) {
 
     crazyMode = true;
+  } else if (mouseX < arrow5x + (arrow2w/2) && mouseX > arrow5x - (arrow2w/2) && mouseY < arrow5y + (arrow2h/2) && mouseY > arrow5y - (arrow2h/2)) {
+
+    aiMode -= 1;
+    if (aiMode < 0) {
+      aiMode = 3;
+    }
+  } else if (mouseX < arrow6x + (arrow2w/2) && mouseX > arrow6x - (arrow2w/2) && mouseY < arrow6y + (arrow2h/2) && mouseY > arrow6y - (arrow2h/2)) {
+
+    aiMode += 1;
+    if (aiMode > 3) {
+      aiMode = 1;
+    }
   }
   if (scene == 1) {
 
@@ -762,8 +818,8 @@ void howtoplayscreen() {
 }
 void pause() {
   fill(255);
-  rect(pausebtnx-30.144, pausebtny, pausebtnw, pausebtnh);
-  rect(pausebtnx+30.142, pausebtny, pausebtnw, pausebtnh);
+  rect(pausebtnx-displayWidth*.0085, pausebtny, pausebtnw, pausebtnh);
+  rect(pausebtnx+displayWidth*.0085, pausebtny, pausebtnw, pausebtnh);
   if (mouseX < pausebtnx+30.142 + (pausebtnw/2) && mouseX > pausebtnx-30.142 - (pausebtnw/2) && mouseY < pausebtny + (pausebtnh/2) && mouseY > pausebtny - (pausebtnh/2)) {
     prevScene = scene;
     scene = 11;
