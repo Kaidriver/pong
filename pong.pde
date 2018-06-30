@@ -55,6 +55,10 @@ float arrow5x;
 float arrow5y;
 float arrow6x;
 float arrow6y;
+float arrow7x;
+float arrow7y;
+float arrow8x;
+float arrow8y;
 float backbtnx;
 float backbtny;
 float backbtnw;
@@ -88,6 +92,7 @@ PImage expand;
 float [] val;
 PImage shrink;
 PImage [] logo;
+PImage [] pups;
 boolean calculate;
 int prevScene;
 boolean bounced;
@@ -95,6 +100,7 @@ int x = 0;
 int y = 0;
 float last;
 int aiMode;
+int pup;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
 
@@ -129,6 +135,10 @@ public void setup() {
   arrow5y = displayHeight*.12;
   arrow6x = displayWidth*.835;
   arrow6y = displayHeight*.12;
+  arrow7x = displayWidth/2*1.12;
+  arrow7y = displayHeight/2*1.47;
+  arrow8x = displayWidth/2*1.35;
+  arrow8y = displayHeight/2*1.47;
   backbtnx = displayWidth/10;
   backbtny = displayHeight/9;
   backbtnw = displayWidth*.044;
@@ -145,6 +155,7 @@ public void setup() {
   pmenubtny = displayHeight*.7;
   projScene = 1;
   location = 0;
+  pup = 0;
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 2);
   player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185);
   player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185);
@@ -164,6 +175,11 @@ public void setup() {
   for (int i = 0; i < logo.length; i++) {
     String filename = "startScreen" + i + ".gif";
     logo[i] = loadImage(filename);
+  }
+  pups = new PImage[5];
+  for (int i = 0; i < pups.length; i++) {
+    String filename = "pup" + i + ".png";
+    pups[i] = loadImage(filename);
   }
   act = this.getActivity();
   cont = act.getApplicationContext();
@@ -646,6 +662,16 @@ void mousePressed() {
     if (aiMode > 3) {
       aiMode = 1;
     }
+  } else if (mouseX < arrow7x + (arrow2w/2) && mouseX > arrow7x - (arrow2w/2) && mouseY < arrow7y + (arrow2h/2) && mouseY > arrow7y - (arrow2h/2)) {
+    pup -= 1;
+    if (pup < 0) {
+      pup = 4;
+    }
+  } else if (mouseX < arrow8x + (arrow2w/2) && mouseX > arrow8x - (arrow2w/2) && mouseY < arrow8y + (arrow2h/2) && mouseY > arrow8y - (arrow2h/2)) {
+    pup += 1;
+    if (pup > 4) {
+      pup = 0;
+    }
   }
   if (scene == 1) {
 
@@ -785,6 +811,7 @@ void createLogo()
       //words
       image(logo[0], width * .25, height * .001, widthL, .7 *widthL );
       //logos
+      
       image(logo[4], width*.359375, height*.45, height*.45, height*.45);
     }
     if (frameCount>=170)
@@ -811,6 +838,30 @@ void howtoplayscreen() {
   text("TWO PLAYER: PLAYER ONE DRAG THE LEFT PLATFORM, PLAYER TWO DRAG THE RIGHT PLATFORM", displayWidth/2, displayHeight/2*.75);
   text("PLAY AGAINST AI: DRAG THE RIGHT PLATFORM AND PLAY AGAINST AN AI", displayWidth/2, displayHeight/2);
   text("CRAZY MODE: ENABLE POWERUPS (SLOWDOWN, PLATFORM SIZE CHANGE, ETC.)", displayWidth/2, displayHeight/2*1.25);
+  text("POWER UPS:", displayWidth/2*.88, displayHeight/2*1.5);
+  fill(0);
+  stroke(255);
+  rect(arrow7x, arrow7y, arrow1h, arrow1w);
+  fill(255);
+  triangle(arrow7x-arrow1w/2, arrow7y, arrow7x+arrow1w/2, arrow7y-arrow1h/2, arrow7x+arrow1w/2, arrow7y+arrow1h/2);
+  fill(0);
+  stroke(255);
+  rect(arrow8x, arrow8y, arrow1h, arrow1w);
+  fill(255);
+  triangle(arrow8x+arrow2w/2, arrow8y, arrow8x-arrow2w/2, arrow8y-arrow2h/2, arrow8x-arrow2w/2, arrow8y+arrow2h/2);
+  image(pups[pup], displayWidth/2*1.2031, displayHeight/2*1.399, displayWidth*.038, displayWidth*.038);
+  if (pup == 0) {
+      
+    text("SHRINK: PERMANENTLY SHRINKS THE PLATFORM'S SIZE", displayWidth/2, displayHeight/2*1.75);
+  } else if (pup == 1) {
+    text("EXPAND: PERMANENTLY ENLARGES THE PLATFORM'S SIZE", displayWidth/2, displayHeight/2*1.75);
+  } else if (pup == 2) {
+    text("REMOVE: PERMANENTLY REMOVES A BALL", displayWidth/2, displayHeight/2*1.75);
+  } else if (pup == 3) {
+    text("DUPLICATE: PERMANENTLY ADDS A BALL", displayWidth/2, displayHeight/2*1.75);
+  } else {
+    text("SPEED: INCREASES THE SPEED TEMPORARILY FOR 10 SECONDS", displayWidth/2, displayHeight/2*1.75);
+  }     
   if (mouseX < backbtnx + (backbtnw/2) && mouseX > backbtnx - (backbtnw/2) && mouseY < backbtny + (backbtnh/2) && mouseY > backbtny - (backbtnh/2)) {
     projScene = 1;
     scene = 99;
