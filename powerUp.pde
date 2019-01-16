@@ -1,52 +1,70 @@
 public class powerUp {
 
-  private float x, y, w, h;
- 
+  private float x, y;
+  private float w = 64;
+  private float h = 64;
   private int type;
-  private color platColor = color(255, 255, 255);
-  public powerUp( float x, float y, float w, float h, int type) {
+  
+  public powerUp( float x, float y, int type) {
     this.x = x;
     this.y = y;
-    this.w = w;
-    this.h = h;
+    
     this.type = type;
   }
 
   public void display () {
-
-    fill(this.platColor);
     if (type == 1) {
-      image(slowdown, x, y, w, h);
+      image(slowdown, x, y);
+     
     } else if (type == 2) {
-      fill(255);
-      image(addBall, x, y, w, h);
+     
+      image(addBall, x, y);
     } else if (type == 3) {
-      fill(255);
-      image(removeBall, x, y, w, h);
+      
+      image(removeBall, x, y);
     } else if (type == 4) {
-      fill(255);
-      image(expand, x, y, w, h);
+     
+      image(expand, x, y);
     } else if (type == 5) {
-      fill(125);
-      image(shrink, x, y, w, h);
+     
+      image(shrink, x, y);
     }
   }
 
   public boolean collisions () {
-     
- 
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
-      if (ballz.x - ballz.size/2 < x + (w/2) && ballz.x + ballz.size/2 > x - (w/2) && ballz.y - ballz.size/2 < y + (h/2) && ballz.y + ballz.size/2 > y - (h/2)) {
-
+      float testX = ballz.x;
+      float testY = ballz.y;
+      if (ballz.x < x) {
+        testX = x;
+      } else if (ballz.x > x+w) {
+        testX = x+w;
+      }
+      if (ballz.y < y) {
+        testY = y;
+      } else if (ballz.y > y+h) {
+        testY = y+h;
+      }
+      float distX = ballz.x - testX;
+      float distY = ballz.y - testY;
+      float distance = sqrt((distX*distX) + (distY*distY));
+      
+      //float distance = dist(ballz.x, ballz.y, x, y);
+      //distance <  abs(ballz.size/2 + w/2)
+      if (distance <= ballz.size/2) {
+        //ballz.x - ballz.size/2 < x + (w/2) && ballz.x + ballz.size/2 > x - (w/2) && ballz.y - ballz.size/2 < y + (h/2) && ballz.y + ballz.size/2 > y - (h/2)
         fill(255);
         if (type == 1) {
           start = frameCount;
-          currentspd = ballz.speed;
-          ballz.speed *= .5;  
+          if (timer == false) {
+            currentspd = ballz.speed;
+            ballz.speed *= .5; 
+          }
           timer = true;
         } else if (type == 2) {
-          balls.add(new ball(x, y, 8, 3, 25, 1));
+          ball bal  = balls.get(0);
+          balls.add(new ball(x, y, -bal.dx, -bal.dy, bal.size, bal.speed/2));
         } else if (type == 3) {
           if (balls.size() > 1) {
             balls.remove(balls.size()-1);

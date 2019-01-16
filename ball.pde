@@ -11,14 +11,14 @@ public class ball {
     this.speed = speed;
   }
   public void move() {
-    if (scene == 3) {
+     
+    if (scene == 1) {
+      x += dx * 1.55;
+      y += dy * 1.55;
+    } else {
       x += dx * speed;
       y += dy * speed;
-    } else {
-      x += dx;
-      y += dy;
     }
-     
   }
   public void display() {
     fill(this.ballColor);
@@ -220,33 +220,38 @@ public class ball {
     }
   }
   public void win () {
-    if (x + size/2 < 0) {
-      p2score += 1;
-      reset();
-      int prob = PApplet.parseInt(random(2));
-      if (prob == 0) {
-       dx *= -1;
-      } 
-      delay(500);
-    } else if (x - size/2 > width){
-      p1score += 1;
-      reset();
-      int prob = PApplet.parseInt(random(2));
-      if (prob == 0) {
-        dx *= -1;
-      } 
-      delay(500);
-    }
-    if (p1score == scorelimit || p2score == scorelimit) {
-      scene = 4;
-    }
+
+      if (x + size/2 < 0) {  
+          p2score += 1;
+          reset();
+          int prob = PApplet.parseInt(random(2));
+          if (prob == 0) {
+           dx *= -1;
+          } 
+        
+      } else if (x - size/2 > width){        
+          p1score += 1;
+          reset();
+          int prob = PApplet.parseInt(random(2));
+          if (prob == 0) {
+            dx *= -1;
+          } 
+        
+      }
+      if (p1score == scorelimit || p2score == scorelimit) {
+        scene = 4;
+      }
+    
   }
   public void gameover() {
     if (x +(size/2) < 0 || x - (size/2) > displayWidth) {
       if (scene == 1) {
         x = displayWidth/2;
         y = displayHeight/2;
-      } else {
+      } else if (balls.size() > 1) {
+        balls.remove(this);
+      }
+       else {
         scene = 10;
       }
         

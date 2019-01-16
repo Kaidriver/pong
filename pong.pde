@@ -19,7 +19,7 @@ int streamId;
 ball menub;
 platform player1; 
 platform player2;  
-
+PFont font;
 static final String CONFIG_FILE = "save.txt";
 boolean [] keys = new boolean[128]; 
 ArrayList <powerUp> powerups = new ArrayList <powerUp> ();
@@ -27,16 +27,8 @@ ArrayList <ball> balls = new ArrayList <ball> ();
 int p1score = 0;
 int p2score = 0;
 int soloscore = 0;
-float button1x;
-float button1y;
-float button2x;
-float button2y;
-float button3x;  
-float button3y;  
-float button4x;
-float button4y;
-float button5x;
-float button5y;
+float button1x, button1y, button2x, button2y, button3x, button3y, button4x, button4y, button5x, button5y;
+boolean resetVal = false;
 float buttonh;
 float buttonw;
 float arrow1x;
@@ -49,6 +41,7 @@ float arrow2w;
 float arrow2h;
 float arrow3x;
 float arrow3y;
+boolean resetPos;
 float arrow4x;
 float arrow4y;
 float arrow5x;
@@ -63,7 +56,7 @@ float backbtnx;
 float backbtny;
 float backbtnw;
 float backbtnh;
-float pausebtnx;
+float pausebtnx, pausebtnx2;
 float pausebtny;
 float pausebtnw;
 float pausebtnh;
@@ -75,6 +68,7 @@ float pmenubtnx;
 float pmenubtny;
 float currentspd;
 boolean timer;
+boolean changed;
 float location;
 float start;
 int scorelimit = 5;
@@ -93,6 +87,7 @@ float [] val;
 PImage shrink;
 PImage [] logo;
 PImage [] pups;
+PImage rateImg, shareImg, line;
 boolean calculate;
 int prevScene;
 boolean bounced;
@@ -101,12 +96,13 @@ int y = 0;
 float last;
 int aiMode;
 int pup;
+links rate, share;
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
-
+  
   orientation(LANDSCAPE);
   frameRate(60);
-  size(displayWidth, displayHeight);
+  fullScreen(P2D);
   button1x = displayWidth/4*1.2;
   button1y = displayHeight/4*2;
   button2x = displayWidth/4*2.8;
@@ -143,7 +139,8 @@ public void setup() {
   backbtny = displayHeight/9;
   backbtnw = displayWidth*.044;
   backbtnh = displayHeight*.074;
-  pausebtnx = displayWidth/2;
+  pausebtnx = displayWidth/3*2;
+  pausebtnx2 = displayWidth/3;
   pausebtny = displayHeight*.085;
   pausebtnh = displayWidth*.030;
   pausebtnw = displayHeight*.011;
@@ -154,23 +151,33 @@ public void setup() {
   pmenubtnx = displayWidth/2;
   pmenubtny = displayHeight*.7;
   projScene = 1;
+  changed = false;
   location = 0;
   pup = 0;
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 2);
   player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185);
   player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185);
+  rate = new links (displayWidth/2*.25, displayHeight/2, displayWidth*.10, displayWidth*.10, 1);
+  share = new links (displayWidth/2*1.75, displayHeight/2, displayWidth*.10, displayWidth*.10, 2);
   calculate = true;
   rectMode(CENTER);
   textSize(48);
   background(0);
-
-
+  font = createFont("ARCADECLASSIC.TTF", 48);
   slowdown = loadImage("slowdown2.png");
+  slowdown.resize(64, 64);
   addBall = loadImage("add.png");
+  addBall.resize(64, 64);
   removeBall = loadImage("removeball.png");
+  removeBall.resize(64, 64);
   expand = loadImage("expand.png");
+  expand.resize(64, 64);
   shrink = loadImage("shrink.png");
-
+  shrink.resize(64, 64);
+  rateImg = loadImage("rate.png");
+  shareImg = loadImage("share.png");
+  line = loadImage("line.png");
+  line.resize(100, 1080);
   logo = new PImage[5];
   for (int i = 0; i < logo.length; i++) {
     String filename = "startScreen" + i + ".gif";
@@ -183,7 +190,7 @@ public void setup() {
   }
   act = this.getActivity();
   cont = act.getApplicationContext();
- 
+
   // load up the files
   try {
     afd1 = cont.getAssets().openFd("boopH.wav");
@@ -192,7 +199,7 @@ public void setup() {
   catch(IOException e) {
     println("error loading files:" + e);
   }
- 
+
   // create the soundPool HashMap - apparently this constructor is now depracated?
   soundPool = new SoundPool(12, AudioManager.STREAM_MUSIC, 0);
   soundPoolMap = new HashMap<Object, Object>(2);
@@ -202,27 +209,26 @@ public void setup() {
   requestPermission("android.permission.READ_EXTERNAL_STORAGE");
   requestPermission("android.permission.WRITE_EXTERNAL_STORAGE");
   loadData();
+  textFont(font, 32);
 }
 public void draw() {
   saveData();
   if (scene == 0) {
     createLogo();
   } else if (scene == 99) {
-     scorelimit = 5;
-     reset();
-     
-  } 
-  else if (scene == 1) {
+    scorelimit = 5;
+    reset();
+  } else if (scene == 1) {
     menu();
   } else if (scene == 2) {
     select();
   } else if (scene == 6) {
-   
+
     background(0);
-    
+
     text(p1score, displayWidth/10, displayHeight*.035);
     text(p2score, displayWidth/10*9, displayHeight*.035);
-    
+
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
@@ -230,13 +236,15 @@ public void draw() {
       ballz.move();
       ballz.win();
     }
-    
+    bkground();
     player1.display();
     player2.display();
+    
     pause();
     aiMovement();
     platBoundary();
-    if (crazyMode) {
+    
+    if (crazyMode && changed == true) {
       powerup();
       for (int i = 0; i < powerups.size(); i++) {
         powerUp powerup = powerups.get(i);
@@ -249,7 +257,8 @@ public void draw() {
   } else if (scene == 3) {
     background(0);
     text(frameRate, 200, 200);
-    text(soloscore, displayWidth/2, displayHeight*.035);
+    textSize(50);
+    text(soloscore, displayWidth/3, displayHeight*.085);
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
@@ -257,21 +266,25 @@ public void draw() {
       ballz.move();
       ballz.gameover();
     }
+    bkground();
     player1.display();
     player2.display();
+    
     pause();
     player1.y = player2.y;
     platBoundary();
-
-    powerup();
-    for (int i = 0; i < powerups.size(); i++) {
-      powerUp powerup = powerups.get(i);
-      powerup.display();
-      if (powerup.collisions()) {
-        powerups.remove(i);
+    if (changed == true) {
+      powerup();
+      for (int i = 0; i < powerups.size(); i++) {
+        powerUp powerup = powerups.get(i);
+        powerup.display();
+        if (powerup.collisions()) {
+          powerups.remove(i);
+        }
       }
     }
   } else if (scene == 10) {
+    
     background(0);
     textSize(60);
     text("GAMEOVER!", displayWidth/2, displayHeight/2*.5);
@@ -283,10 +296,15 @@ public void draw() {
     fill(255);
     textSize(48);
     text("Main Menu", button3x, button3y);
+    rate.display();
+    text("Rate the game!", rate.x, rate.y+displayWidth*.1);
+    share.display();
+    text("Follow our facebook!", share.x, share.y+displayWidth*.1);
     if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
       projScene = 1;
       scene = 99;
-    }
+    } 
+ 
   } else if (scene == 4) {
     background(0);
     textSize(60);
@@ -310,6 +328,10 @@ public void draw() {
     fill(255);
     textSize(48);
     text("Main Menu", button3x, button3y);
+    rate.display();
+    text("Rate the game!", rate.x, rate.y+displayWidth*.1);
+    share.display();
+    text("Follow our facebook!", share.x, share.y+displayWidth*.1);
     if (mouseX < button3x + (buttonw/2) && mouseX > button3x - (buttonw/2) && mouseY < button3y + (buttonh/2) && mouseY > button3y - (buttonh/2)) {
       projScene = 1;
       scene = 99;
@@ -320,7 +342,7 @@ public void draw() {
     background(0);
     text(p1score, displayWidth/10, displayHeight*.035);
     text(p2score, displayWidth/10*9, displayHeight*.035);
-
+    bkground();
     player1.display();
     player2.display();
     
@@ -332,7 +354,7 @@ public void draw() {
       ballz.move();
       ballz.win();
     }
-    if (crazyMode) {
+    if (crazyMode && changed == true) {
       powerup();
       for (int i = 0; i < powerups.size(); i++) {
         powerUp powerup = powerups.get(i);
@@ -346,12 +368,13 @@ public void draw() {
   } else if (scene == 9) {
     howtoplayscreen();
   } else if (scene == 11) {
-     background(0);
+     
+    background(0);
     if (prevScene == 6 || prevScene == 8) {
       text(p1score, displayWidth/10, displayHeight*.035);
       text(p2score, displayWidth/10*9, displayHeight*.035);
     } else {
-       text(soloscore, displayWidth/2, displayHeight*.035);
+      text(soloscore, displayWidth/2, displayHeight*.035);
     }
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
@@ -359,13 +382,12 @@ public void draw() {
       ballz.collisions();
       ballz.win();
     }
-    
+ 
     player1.display();
     player2.display();
     unpause(prevScene);
     platBoundary();
     if (crazyMode) {
-      powerup();
       for (int i = 0; i < powerups.size(); i++) {
         powerUp powerup = powerups.get(i);
         powerup.display();
@@ -386,6 +408,7 @@ public void menu() {
   player2.display();
   player1.display();
   aiMovement();
+  platBoundary();
   textAlign(CENTER);
   textSize(128);
   text("PONG", displayWidth/2, displayHeight/2*.5f);
@@ -405,14 +428,18 @@ public void menu() {
 }
 
 public void reset() {
+  resetVal = true;
+  resetPos = true;
+  changed = false;
   balls.clear();
-  balls.add(new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.55));
-  menub = new ball(displayWidth/2, displayHeight/2, displayWidth*.008, 0, displayWidth*.013, 1.55);
+  
+  balls.add(new ball(player2.x-player2.w*3/4, displayHeight/2, 0, 0, displayWidth*.013, 1.55));
+  menub = new ball(displayWidth/2, displayHeight/2, -displayWidth*.008, 0, displayWidth*.013, 1.55);
   powerups.clear();
   speedChange = 1.025;
   calculate = true;
   player1.y = displayHeight/2;
-  player2.y = displayHeight/2;
+  player2.y = displayHeight/2; 
   player1.h = displayHeight*.185;
   player2.h = displayHeight*.185;
   soloscore = 0;
@@ -423,137 +450,210 @@ public void reset() {
   }
   scene = projScene;
 }
-
+public void bkground() {
+  for (float i = displayHeight*.055555555; i < displayHeight; i+=displayHeight*.055555555) {
+    rect(displayWidth/2, i, displayWidth*.01041666666, displayWidth*.01041666666);
+  }
+ // image(line, displayWidth/2-displayWidth*0.01041666, 0);
+}
 public void aiMovement() {
   
-  if (calculate) {
+  if (scene == 1 && calculate) {
     val = calculations();
     location = val[0];
     calculate = false;
+  } else if (scene == 6) {
+    val = calculations();
+    location = val[0];
   }
-   
-   text(val[1], 900, 300);
-   text(location, 300, 300);
-    text(menub.y, 300, 600);
-    text(menub.x, 1200, 300);
-    text(str(calculate), 300, 900);
-    text(menub.dx, 600, 900);
-    if (scene == 1) {
-      if (menub.dx > 0) {
-        if (player2.y > location) {
-          player2.y -= 10;
-        } 
-        if (player2.y < location) {
-          player2.y += 10;
-        }
-      
-      } else if (menub.dx < 0) {
-        if (player1.y > location) {
-          player1.y -= 10;
-        } 
-        if (player1.y < location) {
-          player1.y += 10;
-        }
-        
+  text(val[1], 900, 300);
+  text(location, 300, 300);
+  text(menub.y, 300, 600);
+  text(menub.x, 1200, 300);
+  text(str(calculate), 300, 900);
+  text(menub.dx, 600, 900);
+ 
+  if (player1.y > displayHeight - player1.h/2){
+    player1.y = displayHeight - player1.h/2;
+  }
+  if (player1.y < player1.h/2) {
+    player1.y = player1.h/2;
+  }
+if (scene == 1) {
+    if (menub.dx > 0) {
+      if (player2.y > location) {
+        player2.y -= displayWidth*.00625;
+      } 
+      if (player2.y < location) {
+        player2.y += displayWidth*.00625;
       }
-      if (bounced) {
-        calculate = true;
-        bounced = false;
+      if (player2.y < player2.w/2) {
+        player2.y += 0;
+      } else if (player2.y > displayHeight  - player2.w/2) {
+        player2.y += 0;
       }
-      
-    } else {
-      if (aiMode == 1) {
-        for (int i = 0; i < balls.size(); i++) {
-          ball ballz = balls.get(i);
-          if (ballz.dx < 0) {
-            if (player1.y > ballz.y) {
-              player1.y -= 5;
-            } 
-            if (player1.y < ballz.y) {
-              player1.y += 5;
-            }
-            
-          }
-        }
-      } else {
-          
-        for (int i = 0; i < balls.size(); i++) {
-          ball ballz = balls.get(i);
-          if (ballz.dx < 0) {
-            if (player1.y > location) {
-              player1.y -= 7;
-            } 
-            if (player1.y < location) {
-              player1.y += 7;
-            }
-            
-          }
-          if (bounced) {
-            calculate = true;
-            bounced = false;
-          }
-        }
+    } else if (menub.dx < 0) {
+      if (player1.y > location) {
+        player1.y -= displayWidth*.00625;
+      } 
+      if (player1.y < location) {
+        player1.y += displayWidth*.00625;
       }
-     }
-      
-    
-
-        
+     
+      if (player1.y < player1.w/2) {
+         player1.y += 0;
+      } else if (player1.y > displayHeight - player1.w/2) {
+          player1.y += 0;
+      }
   
+    }
+    if (bounced) {
+      calculate = true;
+      bounced = false;
+    }
+  } else {
+    if (aiMode == 1 || aiMode ==2) {
+      double speed = 0;
+      if (aiMode == 1) {
+        speed = displayWidth*.0036;
+      } else {
+        speed = displayWidth*.0052;
+      }
+      for (int i = 0; i < balls.size(); i++) {
+        ball ballz = balls.get(i);
+        if (ballz.dx < 0) {
+          if (player1.y > ballz.y) {
+            player1.y -= speed;
+          } 
+          if (player1.y < ballz.y) {
+            player1.y += speed;
+          }
+        }
+      }
+    } else {
+
+      for (int i = 0; i < balls.size(); i++) {
+        ball ballz = balls.get(i);
+        if (ballz.dx < 0) {
+          if (player1.y > location) {
+            player1.y -= displayWidth*.00625;
+          } 
+          if (player1.y < location) {
+            player1.y += displayWidth*.00625;
+          }
+        }
+              
+      }
+     
+    }
+  }
 }
 public float [] calculations () {
   float destination = 0;
   float bounceLocation = 0;
-
-  if (calculate) {
+  ball ballz = balls.get(0);
+   
     if (scene == 6) {
+
       for (int i = 0; i < balls.size(); i++) {
-        ball ballz = balls.get(i);
-        if (ballz.dx < 0) {
-            if ((ballz.dy/ballz.dx)*(-ballz.x)+ballz.y < 0) {
-              bounceLocation = displayWidth - (ballz.y*ballz.dx)/ballz.dy;
-              destination = -(ballz.dy/ballz.dx)*(-bounceLocation);
-            } else if ((ballz.dy/ballz.dx)*(-ballz.x)+ballz.y > displayHeight) {
-              bounceLocation = displayWidth - ((displayHeight - ballz.y)*-(ballz.dx))/ballz.dy;
-              destination = -(ballz.dy/ballz.dx)*(-bounceLocation)+ displayHeight;
-            } else {
-              destination = (ballz.dy/ballz.dx)*(-ballz.x)+ (ballz.y);
-            }
-          }
+        ball closestBall = balls.get(i);
+        if (closestBall.x < ballz.x && closestBall.dx < 0) {
+          ballz = closestBall;
         }
-    }
-    else if (menub.dx < 0) {
-      if ((menub.dy/menub.dx)*(-menub.x)+menub.y < 0) {
-        bounceLocation = displayWidth - (menub.y*menub.dx)/menub.dy;
-        destination = -(menub.dy/menub.dx)*(-bounceLocation);
-      } else if ((menub.dy/menub.dx)*(-menub.x)+menub.y > displayHeight) {
-        bounceLocation = displayWidth - ((displayHeight - menub.y)*-(menub.dx))/menub.dy;
-        destination = -(menub.dy/menub.dx)*(-bounceLocation)+ displayHeight;
-      } else {
-        destination = (menub.dy/menub.dx)*(-menub.x)+ (menub.y);
       }
-    } else if(menub.dx > 0) {
-      if ((menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y < 0) {
-        bounceLocation = -(menub.y*menub.dx)/menub.dy;
-        destination = -(menub.dy/menub.dx)*(displayWidth - bounceLocation);
-      } else if ((menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y > displayHeight) {
-        bounceLocation = (displayHeight - menub.y)*(menub.dx/menub.dy);
-        destination = -(menub.dy/menub.dx)*(displayWidth - bounceLocation)+displayHeight;
-      } else {
-        destination = (menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y;
+      if  (resetPos) {
+        destination = displayHeight/2;
+        resetPos = false;
+      } 
+      if (ballz.dx < 0) {
+        if ((ballz.dy/ballz.dx)*(-ballz.x)+ballz.y < 0) {
+          bounceLocation = ballz.x - (ballz.y*ballz.dx)/ballz.dy;
+          destination = -(ballz.dy/ballz.dx)*(-bounceLocation);
+          if ((-ballz.dy/ballz.dx)*(-bounceLocation) > displayHeight) {
+            /*float temp = bounceLocation;
+            bounceLocation = (-((displayHeight*ballz.dx)/-ballz.dy) + ballz.x - temp);
+            destination = -(ballz.dy/ballz.dx)*(-bounceLocation)+ displayHeight;
+            */
+            destination = displayWidth - (displayHeight - (destination-displayHeight));
+          }
+        } else if ((ballz.dy/ballz.dx)*(-ballz.x)+ballz.y > displayHeight) {
+          bounceLocation = ballz.x - ((displayHeight - ballz.y)*-(ballz.dx))/ballz.dy;
+          destination = -(ballz.dy/ballz.dx)*(-bounceLocation)+ displayHeight;
+          if (-(ballz.dy/ballz.dx)*(-bounceLocation)+displayHeight < 0) {
+            /*float temp = bounceLocation;
+            bounceLocation = ((-((displayHeight*ballz.dx)/ballz.dy)) + ballz.x - temp);
+            destination = (-ballz.dy/ballz.dx)*(-bounceLocation);
+             */
+             destination = -destination;
+          }
+        } else {
+          destination = (ballz.dy/ballz.dx)*(-ballz.x)+ (ballz.y);
+        }
       }
-    } 
-    
+    } else if (calculate) {
+      if (menub.dx < 0) {
+        if ((menub.dy/menub.dx)*(-menub.x)+menub.y < 0) {
+          bounceLocation = displayWidth - (menub.y*menub.dx)/menub.dy;
+          destination = -(menub.dy/menub.dx)*(-bounceLocation);
+          if (-(menub.dy/menub.dx)*(-bounceLocation) > displayHeight) {
+            float temp = bounceLocation;
+            bounceLocation = (-((displayHeight*menub.dx))/-menub.dy) + menub.x - temp;
+            destination = -(menub.dy/menub.dx)*(-bounceLocation)+ displayHeight;
+          }
+        } else if ((menub.dy/menub.dx)*(-menub.x)+menub.y > displayHeight) {
+          bounceLocation = displayWidth - ((displayHeight - menub.y)*-(menub.dx))/menub.dy;
+          destination = -(menub.dy/menub.dx)*(-bounceLocation)+ displayHeight;
+          if (-(menub.dy/menub.dx)*(-bounceLocation)+displayHeight < 0) {
+            float temp = bounceLocation;
+            bounceLocation = ((-((displayHeight*menub.dx)/menub.dy)) + menub.x - temp);
+            destination = -(menub.dy/menub.dx)*(-bounceLocation);
+          }
+        } else {
+          destination = (menub.dy/menub.dx)*(-menub.x)+ (menub.y);
+        }
+      } else if (menub.dx > 0) {
+        if ((menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y < 0) {
+          bounceLocation = -(menub.y*menub.dx)/menub.dy;
+          destination = -(menub.dy/menub.dx)*(displayWidth - bounceLocation);
+          if ((-menub.dy/menub.dx)*(displayWidth - bounceLocation) > displayHeight) {
+            float temp = bounceLocation;
+             bounceLocation = -((displayHeight)*(menub.dx/-menub.dy) - displayWidth+temp-menub.x);
+             destination = -(menub.dy/menub.dx)*(displayWidth - bounceLocation)+displayHeight;
+          }
+        } else if ((menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y > displayHeight) {
+          bounceLocation = (displayHeight - menub.y)*(menub.dx/menub.dy);
+          destination = -(menub.dy/menub.dx)*(displayWidth - bounceLocation)+displayHeight;
+          if ((-menub.dy/menub.dx)*(displayWidth - bounceLocation) + displayHeight < 0) {
+            float temp = bounceLocation;
+            bounceLocation = -(((displayHeight*menub.dx)/menub.dy) + -menub.x-displayWidth+temp);
+            destination = -(menub.dy/menub.dx)*(displayWidth - bounceLocation);
+          }
+        } else {
+          destination = (menub.dy/menub.dx)*(displayWidth - menub.x)+menub.y;
+        }
+     }
   }
+  
   float [] val = {destination, bounceLocation};
   return val;
 }
 public void platBoundary() {
-  if (player1.x < 10 || player1.x > 10) {
-    player1.x = 10;
+  if (player1.x < displayWidth*.0052 || player1.x > displayWidth*.0052) {
+    player1.x = displayWidth*.0052;
   }
-  if (player2.x < displayWidth-20 || player2.x > displayWidth-20) {
-    player2.x = displayWidth-20;
+  if (player2.x < displayWidth-displayWidth*.0104 || player2.x > displayWidth-displayWidth*.0104 ) {
+    player2.x = displayWidth-displayWidth*.0104 ;
+  }
+  if (scene == 1) {
+    if (player1.y < player1.w/2) {
+       player1.y = player1.w/2;
+    } else if (player1.y > displayHeight -player1.w/2) {
+       player1.y = displayHeight-player1.w/2;
+    } else if (player2.y < player2.w/2) {
+       player2.y = player2.w/2;
+    } else if (player2.y > displayHeight - player2.w/2) {
+       player2.y = displayHeight-player2.w/2;
+    }
   }
 }
 
@@ -602,7 +702,7 @@ void select() {
   fill(255);
   textSize(48);
   text("Play", button3x, button3y);
-  if(scene == 2) {
+  if (scene == 2) {
     fill(255);
     text("Ai Difficulty:", displayWidth/2, displayHeight/2*.3);
     fill(0);
@@ -637,7 +737,7 @@ void select() {
   }
 }
 void mousePressed() {
-  
+
   if (mouseX < arrow1x + (arrow1w/2) && mouseX > arrow1x - (arrow1w/2) && mouseY < arrow1y + (arrow1h/2) && mouseY > arrow1y - (arrow1h/2)) {
     if (scorelimit > 0) {
       scorelimit -= 1;
@@ -673,6 +773,14 @@ void mousePressed() {
       pup = 0;
     }
   }
+  if ((scene == 6 || scene == 3 || scene == 8) && changed == false) {
+    changed = true;
+    for (int i = 0; i < balls.size(); i++) {
+      ball ballz = balls.get(i);
+      ballz.dx = -displayWidth*.008;
+    }
+   
+  }
   if (scene == 1) {
 
     if (mouseX < button1x + (buttonw/2) && mouseX > button1x - (buttonw/2) && mouseY < button1y + (buttonh/2) && mouseY > button1y - (buttonh/2)) {
@@ -680,11 +788,17 @@ void mousePressed() {
     } else if (mouseX < button2x + (buttonw/2) && mouseX > button2x - (buttonw/2) && mouseY < button2y + (buttonh/2) && mouseY > button2y - (buttonh/2)) {
       projScene = 3;
       reset();
-      
     } else if (mouseX < button4x + (buttonw/2) && mouseX > button4x - (buttonw/2) && mouseY < button4y + (buttonh/2) && mouseY > button4y - (buttonh/2)) {
       scene = 7;
     } else if (mouseX < button5x + (buttonw/2) && mouseX > button5x - (buttonw/2) && mouseY < button5y + (buttonh/2) && mouseY > button5y - (buttonh/2)) {
       scene = 9;
+    }
+  }
+  if (scene == 4 || scene == 10) {
+    if (mouseX > share.x - share.w/2 && mouseX < share.x + share.w/2 && mouseY > share.y-share.h/2 && mouseY < share.y+share.h/2) {
+      link("http://www.processing.org");
+    } else if (mouseX > rate.x - rate.w/2 && mouseX < rate.x + rate.w/2 && mouseY > rate.y-rate.h/2 && mouseY < rate.y+rate.h/2) {
+      link("http://www.processing.org");
     }
   }
 }
@@ -710,54 +824,58 @@ void loadData() {
 
 public boolean surfaceTouchEvent(MotionEvent me) {
   int numTouches = me.getPointerCount();
-  for (int i=0; i < numTouches; i++) { 
-    int pointerId = me.getPointerId(i);
-    if (scene == 3) {
-      if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
-        player2.y = me.getY(i);
-      }
-    } else if (scene != 1 || scene != 6){
-      if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200 && me.getY(i) < displayHeight - player1.h/2 && me.getY(i) > player1.h/2) {
-
-        player1.y = me.getY(i);
-      } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
-
-        player2.y = me.getY(i);
+  if (scene == 1) {
+    
+  } else {
+    for (int i=0; i < numTouches; i++) { 
+     int pointerId = me.getPointerId(i);
+      if (scene == 3 || scene == 6) {
+        if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
+          player2.y = me.getY(i);
+        }
+      } else if (scene == 8) {
+        if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200 && me.getY(i) < displayHeight - player1.h/2 && me.getY(i) > player1.h/2) {
+  
+          player1.y = me.getY(i);
+        } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
+  
+          player2.y = me.getY(i);
+        }
       }
     }
   }
-  return super.surfaceTouchEvent(me);
+  return super.surfaceTouchEvent(me); 
 }
 void playSound(int soundID) {
-   // play(int soundID, float leftVolume, float rightVolume, int priority, int loop, float rate)
-   soundPool.stop(streamId);
-   streamId = soundPool.play(soundID, 1.0, 1.0, 1, 0, 1f);
+  //play(int soundID, float leftVolume, float rightVolume, int priority, int loop, float rate)
+  soundPool.stop(streamId);
+  streamId = soundPool.play(soundID, 1.0, 1.0, 1, 0, 1f);
 }
 void powerup() {
 
   if (millis()%250 == 0) {
 
-    int prob = int(random(10));
-    if (prob == 1) {
-      px = random(200, 1000);
-      py = random (200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 1));
+    int prob = int(random(5));
+    if (prob == 0) {
+      px = random(displayWidth*.104, displayWidth*.521);
+      py = random (displayWidth*.104, displayWidth*.3125);
+      powerups.add(new powerUp(px, py, 1));
+    } else if (prob == 1) {
+      px = random(displayWidth*.104, displayWidth*.104);
+      py = random (displayWidth*.104, displayWidth*.3125);
+      powerups.add(new powerUp(px, py, 2));
     } else if (prob == 2) {
-      px = random(200, 1000);
-      py = random (200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 2));
+      px = random(displayWidth*.104, displayWidth*.104);
+      py = random (displayWidth*.104, displayWidth*.3125);
+      powerups.add(new powerUp(px, py, 3));
     } else if (prob == 3) {
-      px = random(200, 1000);
-      py = random (200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 3));
+      px = random(displayWidth*.104, displayWidth*.104);
+      py = random (displayWidth*.104, displayWidth*.3125);
+      powerups.add(new powerUp(px, py, 4));
     } else if (prob == 4) {
-      px = random(200, 1000);
-      py = random (200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 4));
-    } else if (prob == 5) {
-      px = random(200, 1000);
-      py = random (200, 600);
-      powerups.add(new powerUp(px, py, 80, 80, 5));
+      px = random(displayWidth*.104, displayWidth*.104);
+      py = random (displayWidth*.104, displayWidth*.3125);
+      powerups.add(new powerUp(px, py, 5));
     }
   }
   if (timer) {
@@ -766,14 +884,15 @@ void powerup() {
         ball ballz = balls.get(i);
         ballz.speed = currentspd;
       }
+      timer = false; 
     }
   }
 }
 void createLogo()
 {
 
-    if (height>width)
-    {
+  if (height>width)
+  {
     background(0);
     float widthL = width * .7142857;
     image(logo[0], width * .14285714, height * .001, widthL, .7 *widthL );
@@ -787,7 +906,7 @@ void createLogo()
 
       image(logo[2], 0, 0, width, height);
       image(logo[0], width * .14285714, height * .001, widthL, .7 *widthL );
-      image(logo[4], width*.1428571429, height*.4, width*.7142857143, width*.7142857143);
+      image(logo[4], width*.1428571427, height*.4, width*.7142857143, width*.7142857143);
     }
     if (frameCount>=170)
     {
@@ -811,7 +930,7 @@ void createLogo()
       //words
       image(logo[0], width * .25, height * .001, widthL, .7 *widthL );
       //logos
-      
+
       image(logo[4], width*.359375, height*.45, height*.45, height*.45);
     }
     if (frameCount>=170)
@@ -851,7 +970,7 @@ void howtoplayscreen() {
   triangle(arrow8x+arrow2w/2, arrow8y, arrow8x-arrow2w/2, arrow8y-arrow2h/2, arrow8x-arrow2w/2, arrow8y+arrow2h/2);
   image(pups[pup], displayWidth/2*1.2031, displayHeight/2*1.399, displayWidth*.038, displayWidth*.038);
   if (pup == 0) {
-      
+
     text("SHRINK: PERMANENTLY SHRINKS THE PLATFORM'S SIZE", displayWidth/2, displayHeight/2*1.75);
   } else if (pup == 1) {
     text("EXPAND: PERMANENTLY ENLARGES THE PLATFORM'S SIZE", displayWidth/2, displayHeight/2*1.75);
@@ -866,12 +985,20 @@ void howtoplayscreen() {
     projScene = 1;
     scene = 99;
   }
+ 
 }
 void pause() {
-  fill(255);
-  rect(pausebtnx-displayWidth*.0085, pausebtny, pausebtnw, pausebtnh);
-  rect(pausebtnx+displayWidth*.0085, pausebtny, pausebtnw, pausebtnh);
-  if (mouseX < pausebtnx+30.142 + (pausebtnw/2) && mouseX > pausebtnx-30.142 - (pausebtnw/2) && mouseY < pausebtny + (pausebtnh/2) && mouseY > pausebtny - (pausebtnh/2)) {
+  
+  rect(pausebtnx-displayWidth*.0088, pausebtny, pausebtnw, pausebtnh);
+  rect(pausebtnx+displayWidth*.0088, pausebtny, pausebtnw, pausebtnh);
+  if (scene == 8) {
+    rect(pausebtnx2-displayWidth*.0088, pausebtny, pausebtnw, pausebtnh);
+    rect(pausebtnx2+displayWidth*.0088, pausebtny, pausebtnw, pausebtnh);
+    if (mouseX < pausebtnx2+displayWidth*.01570 + (pausebtnw/2) && mouseX > pausebtnx2-displayWidth*.01570 - (pausebtnw/2) && mouseY < pausebtny + (pausebtnh/2) && mouseY > pausebtny - (pausebtnh/2)) {
+      scene = 11;
+    }
+  }
+  if (mouseX < pausebtnx+displayWidth*.01570 + (pausebtnw/2) && mouseX > pausebtnx-displayWidth*.01570 - (pausebtnw/2) && mouseY < pausebtny + (pausebtnh/2) && mouseY > pausebtny - (pausebtnh/2)) {
     prevScene = scene;
     scene = 11;
   }
@@ -887,11 +1014,419 @@ void unpause(int dest) {
   textSize(48);
   text("Main Menu", pmenubtnx, pmenubtny);
   if (mouseX < pmenubtnx + (buttonw/2) && mouseX > pmenubtnx - (buttonw/2) && mouseY < pmenubtny + (buttonh/2) && mouseY > pmenubtny - (buttonh/2)) {
-     projScene = 1;
-     scene = 99;
+    projScene = 1;
+    scene = 99;
   }
   if (mouseX < unpausebtnx + (unpausebtnw/2) && mouseX > unpausebtnx - (unpausebtnw/2) && mouseY < unpausebtny + (unpausebtnh/2) && mouseY > unpausebtny - (unpausebtnh/2)) {
     scene = dest;
   }
-  
 }
+
+  background('white');
+  image(clarinet, screen.width/2, screen.height/2*.65, screen.width*0.2, screen.height*.6);
+  fill(0);
+  stroke(0);
+  textSize(55);
+  text("Current Note: " + note, screen.width*.05, screen.height*.1);
+  textSize(30);
+  text("Press x to tongue", screen.width*.75, screen.height*.1 )
+  ////////////////////////////
+  
+    if (keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5] && keyArray[10] && keyArray[11] && keyArray[12] && keyArray[14] && keyArray[8]) {
+      if (keyArray[1]) {
+        note = "Mid B";
+        if (!notes[19].isPlaying()) {
+          checkrun(19);
+          notes[19].loop();
+        }
+      } else {
+        note = "Low E";
+        if (!notes[0].isPlaying()) {
+          checkrun(0);
+          notes[0].loop();
+        }
+      }
+    }
+    else if ((keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5] && keyArray[10] && keyArray[11] && keyArray[12] && keyArray[15]) || (keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5] && keyArray[10] && keyArray[11] && keyArray[9] && keyArray[14])) {
+      if (keyArray[1]) {
+        if (!notes[20].isPlaying()) {
+          checkrun(20);
+          notes[20].loop();
+        }
+        note = "Mid C#"
+      } else {
+        note = "Low F#"
+        if (!notes[2].isPlaying()) {
+          checkrun(2);
+          notes[2].loop();
+            
+        }    
+      }
+    
+    }
+    
+    else if (keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5] && keyArray[10] && keyArray[11] && keyArray[12] && keyArray[14]) {
+      if (keyArray[1]) {
+        if (!notes[20].isPlaying()) {
+          checkrun(20);
+          notes[20].loop();
+            
+        }    
+        note = "Mid C";
+      } else {
+        note = "Low F";
+        if (!notes[1].isPlaying()) {
+          checkrun(1);
+          notes[1].loop();
+            
+        } 
+      }
+    
+    }
+    
+    else if (keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5] && keyArray[10] && keyArray[11] && keyArray[12] && keyArray[13]) {
+      if (keyArray[1]) {
+        note = "Mid D#"
+        if (!notes[23].isPlaying()) {
+          checkrun(23);
+          notes[23].loop();
+            
+        } 
+      } else {
+        note = "Low G#"
+        if (!notes[4].isPlaying()) {
+          checkrun(4);
+          notes[4].loop();
+            
+        } 
+      }
+      
+    }
+    //This is the pattern that doesn't work
+    else if ( keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5] && keyArray[10] && keyArray[11] && keyArray[12]) {
+      if (keyArray[1]) {
+        if (!notes[22].isPlaying()) {
+          checkrun(22);
+          notes[22].loop();
+        } 
+        note = "Mid D";
+      } else {
+        if (!notes[3].isPlaying()) {
+          checkrun(3);
+          notes[3].loop();
+        } 
+        note = "Low G";
+      }
+      
+    }
+    
+    else if (keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5] && keyArray[11] && keyArray[10]) {
+      if (keyArray[1]) {
+        if (!notes[24].isPlaying()) {
+          checkrun(24);
+          notes[24].loop();
+        } 
+        note = "High E";
+      } else {  
+        if (!notes[5].isPlaying()) {
+          checkrun(5);
+          notes[5].loop();
+        } 
+        note = "Low A";
+      }
+    
+    }
+    else if (keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5] && keyArray[11]) {
+      if (keyArray[1]) {
+        if (!notes[26].isPlaying()) {
+          checkrun(26);
+          notes[26].loop();
+        } 
+        note = "High F#";
+      } else {
+        if (!notes[7].isPlaying()) {
+          checkrun(7);
+          notes[7].loop();
+        } 
+        note = "Low B";
+      }
+      
+    }
+    else if (keyArray[0] && keyArray[3] && keyArray[4] &&  keyArray[5] && keyArray[7]) {
+      if (keyArray[1]) {
+        if (!notes[28].isPlaying()) {
+          checkrun(28);
+          notes[28].loop();
+        } 
+        note = "High G#"
+      } else {
+        if (!notes[9].isPlaying()) {
+          checkrun(9);
+          notes[9].loop();
+        } 
+        note = "Low C#"
+      }
+      
+    }
+    else if (keyArray[0] && keyArray[3] && keyArray[4] && keyArray[5]) {
+      if (keyArray[1]) {
+        if (keyArray[10]) {
+          if (!notes[25].isPlaying()) {
+            checkrun(25);
+            notes[25].loop();
+          } 
+          note = "High F"
+        } else {
+          if (!notes[27].isPlaying()) {
+            checkrun(27);
+            notes[27].loop();
+          } 
+          note = "High G";
+        }
+      
+      } else if (keyArray[10]) {
+        if (!notes[6].isPlaying()) {
+            checkrun(6);
+            notes[6].loop();
+          } 
+        note = "Low A#";
+    
+      } else {
+        if (!notes[8].isPlaying()) {
+            checkrun(8);
+            notes[8].loop();
+        } 
+        note = "Low C";
+      }
+      
+    }
+    
+    else if (keyArray[0] && keyArray[3] && keyArray[4] && keyArray[17] ) {
+      if (keyArray[1]) {
+        if (!notes[29].isPlaying()) {
+          checkrun(29);
+          notes[29].loop();
+        } 
+        note = "High A#"
+      } else {
+        if (!notes[11].isPlaying()) {
+          checkrun(11);
+          notes[11].loop();
+        } 
+        note = "Low D#"
+      }
+    }
+    else if (keyArray[0] && keyArray[3] && keyArray[4]) {
+      if (keyArray[1]) {
+        if (!notes[28].isPlaying()) {
+          checkrun(28);
+          notes[28].loop();
+        } 
+        note = "High A";
+      } else {
+        if (!notes[10].isPlaying()) {
+          checkrun(10);
+          notes[10].loop();
+        } 
+        note = "Low D";
+      }
+      
+    }
+    
+    else if (keyArray[3] && keyArray[0]) {
+      if (keyArray[1]) {
+        if (!notes[30].isPlaying()) {
+          checkrun(30);
+          notes[30].loop();
+        } 
+        note = "High B";
+      } else {
+        if (!notes[12].isPlaying()) {
+          checkrun(12);
+          notes[12].loop();
+        } 
+        note = "Mid E";
+      }
+      
+    } 
+    else if (keyArray[0]) {
+      if (keyArray[1]) {
+        if (!notes[31].isPlaying()) {
+          checkrun(31);
+          notes[31].loop();
+        } 
+        note = "High C";
+      } else {
+        if (!notes[13].isPlaying()) {
+          checkrun(13);
+          notes[13].loop();
+        } 
+        note = "Mid F"
+                
+        
+      }
+    } 
+    else if (keyArray[3] && keyArray[0] == false) {
+      if (!notes[14].isPlaying()) {
+          checkrun(14);
+          notes[14].loop();
+      } 
+      note = "Mid F#"
+    } 
+    else if (keyArray[21] && keyArray[0] == false) {
+      if (!notes[16].isPlaying()) {
+          checkrun(16);
+          notes[16].loop();
+      } 
+      note = "Mid G#"
+    }
+    else if (keyArray[2] && keyArray[1]) {
+      if (!notes[18].isPlaying()) {
+          checkrun(18);
+          notes[18].loop();
+      } 
+      note = "Mid A#"
+    }
+  
+    else if (keyArray[2]) {
+      if (!notes[17].isPlaying()) {
+          checkrun(17);
+          notes[17].loop();
+      } 
+      note = "Mid A"
+    } 
+    else if (keyArray[0] == false) {
+      if (!notes[15].isPlaying()) {
+          checkrun(15);
+          notes[15].loop();
+      } 
+      note = "Mid G";
+    } else {
+        for (var i = 0; i < notes.length; i++) {
+          notes[i].stop();
+      }
+    }
+  
+  if (keyArray[0]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.55, screen.height*.252, screen.width*.010, screen.width*.010);
+  }
+  if (keyArray[1]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.55, screen.height*.228, screen.width*.005, screen.width*.010)
+  }
+  if (keyArray[2]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.475, screen.height*.243, screen.width*.003, screen.width*.008);
+  }
+  if (keyArray[3]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.475, screen.height*.258, screen.width*.008, screen.width*.008);
+  }
+  if (keyArray[4]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.475, screen.height*.285, screen.width*.008, screen.width*.008);
+  }
+  if (keyArray[5]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.475, screen.height*.31, screen.width*.007, screen.width*.007);
+  }
+  if (keyArray[6]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.487, screen.height*.327, screen.width*.008, screen.width*.005);
+  }
+  if (keyArray[7]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.482, screen.height*.31, screen.width*.004, screen.width*.010);
+  }
+  if (keyArray[8]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.487, screen.height*.343, screen.width*.004, screen.width*.009);
+  }
+  if (keyArray[9]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.490, screen.height*.347, screen.width*.0038, screen.width*.009);
+  }
+  if (keyArray[10]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.475, screen.height*.355, screen.width*.007, screen.width*.007);
+  }
+  if (keyArray[11]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.475, screen.height*.377, screen.width*.007, screen.width*.007);
+  }
+  if (keyArray[12]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.475, screen.height*.401, screen.width*.007, screen.width*.007);
+  }
+  if (keyArray[13]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.471, screen.height*.415, screen.width*.012, screen.width*.006);
+  }
+  if (keyArray[14]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.471, screen.height*.431, screen.width*.012, screen.width*.006);
+  }
+  if (keyArray[15]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.461, screen.height*.429, screen.width*.010, screen.width*.006);
+  }
+  if (keyArray[16]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.461, screen.height*.415, screen.width*.010, screen.width*.006);
+  }
+  if (keyArray[17]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.458, screen.height*.333, screen.width*.0065, screen.width*.003);
+  }
+  if (keyArray[18]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.458, screen.height*.326, screen.width*.0065, screen.width*.003);
+  }
+  if (keyArray[19]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.458, screen.height*.319, screen.width*.0065, screen.width*.003);
+  }
+  if (keyArray[20]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.458, screen.height*.312, screen.width*.0065, screen.width*.003);
+  }
+   if (keyArray[21]) {
+    fill(255, 255, 91);
+    stroke(255, 255, 91)
+    ellipse(screen.width*.484, screen.height*.243, screen.width*.003, screen.width*.010);
+  }
+  if (keyArray[22]) {
+     for (var i = 0; i < notes.length; i++) {
+      if (notes[i].isPlaying()) {
+        notes[i].stop();
+        notes[i].play();
+        keyArray[22] = false;
+        }
+      }
+    
+  } 
+}
+*/
+  
