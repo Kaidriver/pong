@@ -2,6 +2,9 @@ public class ball {
   private float x, y, dx, dy, size;
   private float speed;
   private color ballColor = color(255, 255, 255);
+  public boolean start = true;
+  public float begin;
+  public float rand;
   public ball(float x, float y, float dx, float dy, float size, float speed) {
     this.x = x;
     this.y = y;
@@ -16,8 +19,22 @@ public class ball {
       x += dx * 1.55;
       y += dy * 1.55;
     } else {
-      x += dx * speed;
-      y += dy * speed;
+      int interval = 2;
+  
+      if (start) {
+        rand = random(1.5);
+        begin = millis();
+        start = false;
+      }
+      
+      int time = interval-int((millis()-begin)/1000);
+      if (time <= 0) {
+        System.out.println(rand);
+        speed -= rand;
+        start = true;
+      }
+      x += dx * (speed+rand);
+      y += dy * (speed+rand);
     }
   }
   public void display() {
