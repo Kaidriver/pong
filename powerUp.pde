@@ -56,13 +56,13 @@ public class powerUp {
         //ballz.x - ballz.size/2 < x + (w/2) && ballz.x + ballz.size/2 > x - (w/2) && ballz.y - ballz.size/2 < y + (h/2) && ballz.y + ballz.size/2 > y - (h/2)
         fill(255);
         if (type == 1) {
-          start = frameCount;
-          if (timer == false) {
-            currentspd = ballz.speed;
-            ballz.speed *= .5; 
-          }
-          timer = true;
-        } else if (type == 2) {
+          timer = true; 
+          startTime = true; 
+          currentspd = ballz.speed;
+          ballz.speed *= .5; 
+        }
+          
+        else if (type == 2) {
           ball bal  = balls.get(0);
           balls.add(new ball(x, y, -bal.dx, -bal.dy, bal.size, bal.speed/2));
         } else if (type == 3) {

@@ -3,8 +3,12 @@ public class ball {
   private float speed;
   private color ballColor = color(255, 255, 255);
   public boolean start = true;
+  public boolean startB = true;
+  public float beginB;
   public float begin;
   public float rand;
+  public float interval;
+  public float intervalB; 
   public ball(float x, float y, float dx, float dy, float size, float speed) {
     this.x = x;
     this.y = y;
@@ -19,22 +23,33 @@ public class ball {
       x += dx * 1.55;
       y += dy * 1.55;
     } else {
-      int interval = 2;
-  
+      
+     
       if (start) {
-        rand = random(1.5);
+        rand = random(.6, 1.1); 
         begin = millis();
+        interval = random(.75, 1.25);
         start = false;
       }
       
-      int time = interval-int((millis()-begin)/1000);
+      float time = interval-int((millis()-begin)/1000);
       if (time <= 0) {
         System.out.println(rand);
-        speed -= rand;
-        start = true;
+        rand = 0;
+        interval = 3;
+        if (startB) {
+          beginB = millis();
+          startB = false;
+        }
+        float time2 = interval-int((millis()-beginB)/1000);
+        if (time2 <= 0) {
+          start = true;
+          startB = true;
+        }
       }
-      x += dx * (speed+rand);
-      y += dy * (speed+rand);
+      
+      x += dx * (speed + rand);
+      y += dy * (speed + rand);
     }
   }
   public void display() {

@@ -97,6 +97,11 @@ float last;
 int aiMode;
 int pup;
 links rate, share;
+//Timer 
+boolean start2 = true;
+boolean startTime = false; 
+float begin2;  
+float pupTime; 
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
   
@@ -853,40 +858,58 @@ void playSound(int soundID) {
 }
 void powerup() {
 
-  if (millis()%250 == 0) {
+  if (start2) {
+      begin2 = millis();
+      start2 = false;
+  }
+  float interval = random(3, 7); 
+  float time = interval-int((millis()-begin2)/1000);
+  if (time <= 0) {
 
     int prob = int(random(5));
     if (prob == 0) {
-      px = random(displayWidth*.104, displayWidth*.521);
-      py = random (displayWidth*.104, displayWidth*.3125);
+      px = random(displayWidth*1/5, displayWidth*4/5);
+      py = random (displayHeight*1/5, displayHeight*4/5);
       powerups.add(new powerUp(px, py, 1));
+      
     } else if (prob == 1) {
-      px = random(displayWidth*.104, displayWidth*.104);
-      py = random (displayWidth*.104, displayWidth*.3125);
+      px = random(displayWidth*1/5, displayWidth*4/5);
+      py = random (displayHeight*1/5, displayHeight*4/5);
       powerups.add(new powerUp(px, py, 2));
     } else if (prob == 2) {
-      px = random(displayWidth*.104, displayWidth*.104);
-      py = random (displayWidth*.104, displayWidth*.3125);
+      px = random(displayWidth*1/5, displayWidth*4/5);
+      py = random (displayHeight*1/5, displayHeight*4/5);
       powerups.add(new powerUp(px, py, 3));
     } else if (prob == 3) {
-      px = random(displayWidth*.104, displayWidth*.104);
-      py = random (displayWidth*.104, displayWidth*.3125);
+      px = random(displayWidth*1/5, displayWidth*4/5);
+      py = random (displayHeight*1/5, displayHeight*4/5);
       powerups.add(new powerUp(px, py, 4));
     } else if (prob == 4) {
-      px = random(displayWidth*.104, displayWidth*.104);
-      py = random (displayWidth*.104, displayWidth*.3125);
+      px = random(displayWidth*1/5, displayWidth*4/5);
+      py = random (displayHeight*1/5, displayHeight*4/5);
       powerups.add(new powerUp(px, py, 5));
     }
+    
+    start2 = true;
+    
   }
-  if (timer) {
-    if (frameCount - start  > 600 && timer) {
+  
+  if (startTime) {
+    if (timer) {
+      start = millis();
+      timer = false;
+    }
+    pupTime = 5-int((millis()-start)/1000);
+    
+    if (pupTime <= 0) {
       for (int i = 0; i < balls.size(); i++) {
         ball ballz = balls.get(i);
         ballz.speed = currentspd;
       }
-      timer = false; 
+      startTime = false; 
     }
   }
+  
 }
 void createLogo()
 {
