@@ -1,12 +1,13 @@
 public class platform {
   
-   private float x, y, w, h;
+   private float x, y, w, h, type;
    
-   public platform(float x, float y, float w, float h) {
+   public platform(float x, float y, float w, float h, int type) {
     this.x = x;
-     this.y = y;
+    this.y = y;
     this.w = w;
     this.h = h;
+    this.type = type; 
    }
    
    public void display () {

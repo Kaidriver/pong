@@ -74,9 +74,9 @@ float start;
 int scorelimit = 5;
 int highscore = 1;
 float px, py;
-boolean crazyMode = false;
+int crazyMode = 0;
 boolean loop = true;
-float speedChange = 1.025;
+float speedChange = 1.0125;
 int scene = 0;
 int projScene;
 PImage slowdown;
@@ -102,6 +102,8 @@ boolean start2 = true;
 boolean startTime = false; 
 float begin2;  
 float pupTime; 
+ArrayList <platform> platform1 = new ArrayList <platform> ();
+ArrayList <platform> platform2 = new ArrayList <platform> ();
 //PrintWriter output = createWriter("save.txt");
 public void setup() {
   
@@ -160,8 +162,55 @@ public void setup() {
   location = 0;
   pup = 0;
   menub = new ball(displayWidth*.3125, displayHeight*.556, displayWidth*.01, displayHeight*.017777, displayWidth*.013, 2);
-  player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185);
-  player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185);
+  player1 = new platform(displayWidth*.0052, displayHeight/2, displayWidth*.05, displayHeight*.185, 0);
+  player2 = new platform(displayWidth*.9896, displayHeight/2, displayWidth*.05, displayHeight*.185, 0);
+  
+  //Platform group 1
+  for (int i = 0; i < 9; i++) {
+    
+    float x = 0; 
+    float y = 0;
+    int type = 0;
+    if (i < 3) {
+      x = displayWidth*.14+(i*displayWidth*.06);
+      y = displayHeight/6*2;
+      type = 1;
+    }
+    else if (i < 6) {
+      x = displayWidth*.14+((i-3)*displayWidth*.06);
+      y = displayHeight/6*3;
+      type = 2;
+    }
+    else if (i < 9) {
+      x = displayWidth*.14+((i-6)*displayWidth*.06);
+      y = displayHeight/6*4;
+      type = 3;
+    }
+    platform1.add(new platform(x, y,displayWidth*.05, displayHeight*.15, type));
+  }
+  
+  //PLatform group 2
+  for (int i = 0; i < 9; i++) {
+    float x = 0; 
+    float y = 0;
+    int type = 0;
+    if (i < 3) {
+      x = displayWidth*.86-(i*displayWidth*.06);
+      y = displayHeight/6*2;
+      type = 1;
+    }
+    else if (i < 6) {
+      x = displayWidth*.86-((i-3)*displayWidth*.06);
+      y = displayHeight/6*3;
+      type = 2;
+    }
+    else if (i < 9) {
+      x = displayWidth*.86-((i-6)*displayWidth*.06);
+      y = displayHeight/6*4;
+      type = 3;
+    }
+    platform2.add(new platform(x, y,displayWidth*.05, displayHeight*.15, type));
+  }
   rate = new links (displayWidth/2*.25, displayHeight/2, displayWidth*.10, displayWidth*.10, 1);
   share = new links (displayWidth/2*1.75, displayHeight/2, displayWidth*.10, displayWidth*.10, 2);
   calculate = true;
@@ -249,7 +298,7 @@ public void draw() {
     aiMovement();
     platBoundary();
     
-    if (crazyMode && changed == true) {
+    if (crazyMode == 0 && changed == true) {
       powerup();
       for (int i = 0; i < powerups.size(); i++) {
         powerUp powerup = powerups.get(i);
@@ -348,9 +397,16 @@ public void draw() {
     text(p1score, displayWidth/10, displayHeight*.035);
     text(p2score, displayWidth/10*9, displayHeight*.035);
     bkground();
-    player1.display();
-    player2.display();
-    
+    if (crazyMode != 2) {
+      player1.display();
+      player2.display();
+    }
+    else {
+      for (int i = 0; i < platform1.size(); i++) {
+        platform1.get(i).display();
+        platform2.get(i).display();
+      }
+    }
     pause();
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
@@ -359,7 +415,7 @@ public void draw() {
       ballz.move();
       ballz.win();
     }
-    if (crazyMode && changed == true) {
+    if (crazyMode == 0 && changed == true) {
       powerup();
       for (int i = 0; i < powerups.size(); i++) {
         powerUp powerup = powerups.get(i);
@@ -392,7 +448,7 @@ public void draw() {
     player2.display();
     unpause(prevScene);
     platBoundary();
-    if (crazyMode) {
+    if (crazyMode == 0) {
       for (int i = 0; i < powerups.size(); i++) {
         powerUp powerup = powerups.get(i);
         powerup.display();
@@ -517,12 +573,12 @@ if (scene == 1) {
       bounced = false;
     }
   } else {
-    if (aiMode == 1 || aiMode ==2) {
+    if (aiMode == 1 || aiMode == 2) {
       double speed = 0;
       if (aiMode == 1) {
-        speed = displayWidth*.0036;
+        speed = displayHeight*.01;
       } else {
-        speed = displayWidth*.0052;
+        speed = displayHeight*.0175;
       }
       for (int i = 0; i < balls.size(); i++) {
         ball ballz = balls.get(i);
@@ -553,6 +609,7 @@ if (scene == 1) {
     }
   }
 }
+
 public float [] calculations () {
   float destination = 0;
   float bounceLocation = 0;
@@ -684,10 +741,12 @@ void select() {
   rect(arrow4x, arrow4y, arrow2h, arrow2w);
   fill(255);
   triangle(arrow4x+arrow2w/2, arrow4y, arrow4x-arrow2w/2, arrow4y-arrow2h/2, arrow4x-arrow2w/2, arrow4y+arrow2h/2);
-  if (crazyMode) {
-    text("YES", displayWidth*.763, displayHeight/2*.59);
-  } else {
-    text("NO", displayWidth*.763, displayHeight/2*.59);
+  if (crazyMode == 0) {
+    text("Crazy", displayWidth*.763, displayHeight/2*.59);
+  } else if (crazyMode == 1) {
+    text("Normal", displayWidth*.763, displayHeight/2*.59);
+  } else if (scene == 7 && crazyMode == 2) {
+    text("Brick", displayWidth*.763, displayHeight/2*.59);
   }
   fill(255);
   text("Select scrore limit: " + scorelimit, displayWidth/2, displayHeight/2);
@@ -751,10 +810,16 @@ void mousePressed() {
     scorelimit += 1;
   } else if (mouseX < arrow3x + (arrow1w/2) && mouseX > arrow3x - (arrow1w/2) && mouseY < arrow3y + (arrow1h/2) && mouseY > arrow3y - (arrow1h/2)) {
 
-    crazyMode = false;
+    crazyMode--;
+    if (crazyMode < 0) {
+      crazyMode = 2;
+    }
   } else if (mouseX < arrow4x + (arrow2w/2) && mouseX > arrow4x - (arrow2w/2) && mouseY < arrow4y + (arrow2h/2) && mouseY > arrow4y - (arrow2h/2)) {
 
-    crazyMode = true;
+    crazyMode++;
+    if (crazyMode > 2) {
+      crazyMode = 0;
+    }
   } else if (mouseX < arrow5x + (arrow2w/2) && mouseX > arrow5x - (arrow2w/2) && mouseY < arrow5y + (arrow2h/2) && mouseY > arrow5y - (arrow2h/2)) {
 
     aiMode -= 1;
@@ -839,12 +904,59 @@ public boolean surfaceTouchEvent(MotionEvent me) {
           player2.y = me.getY(i);
         }
       } else if (scene == 8) {
-        if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - player1.y) <= 200 && me.getY(i) < displayHeight - player1.h/2 && me.getY(i) > player1.h/2) {
+        float boundsY = player1.h/2;
+        float boundsY2 = player2.h/2;
+        float bounds2 = player1.y;
+        float bounds3 = player2.y;
+        float bounds4 = 200; 
+        float bounds5 = 200; 
+        if (crazyMode == 2) {
+          boundsY = platform1.get(0).h*1.5;
+          boundsY2 = platform2.get(0).h*1.5;
+          fill(255); 
+          System.out.println(boundsY);
+          bounds2 = platform1.get(4).y;
+          bounds3 = platform2.get(4).y;
+          /*
+          bounds4 = (platform1.get(8).y+platform1.get(8).h/2) - (platform1.get(0).y-platform1.get(0).h/2)/2;
+          bounds5 = (platform2.get(8).y+platform2.get(8).h/2) - (platform2.get(0).y-platform2.get(0).h/2)/2;
+          */
+        }
+        if (me.getX(i) < displayWidth/2 && abs(me.getY(i) - bounds2) <= bounds4 && me.getY(i) < displayHeight - boundsY && me.getY(i) > boundsY) {
+          if (crazyMode != 2) {
+            player1.y = me.getY(i);
+          }
+          else {
+            for (int j = 0; j < platform1.size(); j++) {
+              if (platform1.get(j).type == 1) {
+                platform1.get(j).y = (displayHeight/6 + me.getY(i));
+              }
+              else if (platform1.get(j).type == 2) {
+                platform1.get(j).y = me.getY(i);
+              }
+              else {
+                platform1.get(j).y = (me.getY(i) - displayHeight/6);
+              }
+            }
+          }
+        } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - bounds3) <= bounds5 && me.getY(i) < displayHeight - boundsY2 && me.getY(i) > boundsY2) {
   
-          player1.y = me.getY(i);
-        } else if (me.getX(i) > displayWidth/2 && abs(me.getY(i) - player2.y) <= 200 && me.getY(i) < displayHeight - player2.h/2 && me.getY(i) > player1.h/2) {
-  
-          player2.y = me.getY(i);
+          if (crazyMode != 2) {
+            player2.y = me.getY(i);
+          }
+          else {
+            for (int j = 0; j < platform2.size(); j++) {
+              if (platform2.get(j).type == 1) {
+                platform2.get(j).y = (displayHeight/6 + me.getY(i));
+              }
+              else if (platform2.get(j).type == 2) {
+                platform2.get(j).y = me.getY(i);
+              }
+              else {
+                platform2.get(j).y = (me.getY(i) - displayHeight/6);
+              }
+            }
+          }
         }
       }
     }

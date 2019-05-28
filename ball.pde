@@ -26,28 +26,32 @@ public class ball {
       
      
       if (start) {
-        rand = random(.6, 1.1); 
+        rand = random(1, 1.5); 
         begin = millis();
-        interval = random(.75, 1.25);
+        interval = random(.35, .75);
         start = false;
       }
       
-      float time = interval-int((millis()-begin)/1000);
+      float time = interval-(millis()-begin)/1000;
       if (time <= 0) {
         System.out.println(rand);
         rand = 0;
-        interval = 3;
         if (startB) {
+          intervalB = random(1.25, 1.75);
           beginB = millis();
           startB = false;
         }
-        float time2 = interval-int((millis()-beginB)/1000);
+        float time2 = intervalB-(millis()-beginB)/1000;
+         text(time2, 900, 800);
         if (time2 <= 0) {
           start = true;
           startB = true;
         }
       }
-      
+      text(speed, 600, 600);
+      text(rand, 900, 600);
+      text(time, 600, 800);
+     
       x += dx * (speed + rand);
       y += dy * (speed + rand);
     }
