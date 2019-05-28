@@ -494,7 +494,7 @@ public void reset() {
   changed = false;
   balls.clear();
   
-  balls.add(new ball(player2.x-player2.w*3/4, displayHeight/2, 0, 0, displayWidth*.013, 1.55));
+  balls.add(new ball(player2.x-player2.w*3/4, displayHeight/2, 0, 0, displayWidth*.013, 1.45));
   menub = new ball(displayWidth/2, displayHeight/2, -displayWidth*.008, 0, displayWidth*.013, 1.55);
   powerups.clear();
   speedChange = 1.025;
