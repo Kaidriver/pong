@@ -296,5 +296,413 @@ public class ball {
       highscore = soloscore;
     }
   }
-   
+  
+  public void specialCollision() {
+    if(y + (size/2) > height || y-(size/2) < 0) {
+       playSound(2);
+       dy*= -1;
+    }
+    else if (x + (size/2) > displayWidth || x - (size/2) < 0) {
+       playSound(2);
+       dx*= -1;
+    }
+    
+    for (int i = 0; i < platform1.size(); i++) {
+      platform platform = platform1.get(i); 
+      if (platform.type == 1 || platform.type == 2) {
+        platform.h += displayHeight/6;
+      }
+      if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y - platform.h/2 && y - size/2 < platform.y - platform.h/8*3)) { 
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -12;
+        } else {
+           dy = 12;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y - platform.h/8*3 && y - size/2 < platform.y - platform.h/8*2)) {  
+        if (dx < 0) {
+          dx*= -1;
+        }
+       if (dy < 0) {
+           dy = -8;
+        } else {
+           dy = 8;
+        } 
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y - platform.h/8*2 && y - size/2 < platform.y - platform.h/8)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -4;
+        } else {
+           dy = 4;
+        }
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y - platform.h/8 && y - size/2 < platform.y + platform.h/8)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -1;
+        } else {
+           dy = 1;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y + platform.h/8 && y - size/2 < platform.y + platform.h/8*2)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+       if (dy < 0) {
+           dy = -4;
+        } else {
+           dy = 4;
+        }   
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y + platform.h/8*2 && y - size/2 < platform.y + platform.h/8*3)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -8;
+        } else {
+           dy = 8;
+        } 
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y + platform.h/8*3 && y - size/2 < platform.y + platform.h/2)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -12;
+        } else {
+           dy = 12;
+        }   
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } 
+      if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/2 && y - size/2 < platform.y - platform.h/8*3)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -12;
+        } else {
+           dy = 12;
+        }
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/8*3 && y - size/2 < platform.y - platform.h/8*2)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -8;
+        } else {
+           dy = 8;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/8 && y - size/2 < platform.y + platform.h/8)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+      
+        if (dy < 0) {
+           dy = -4;
+        } else {
+           dy = 4;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/8 && y - size/2 < platform.y + platform.h/8)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -1;
+        } else {
+           dy = 1;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y + platform.h/8 && y - size/2 < platform.y + platform.h/8*2)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+      
+        if (dy < 0) {
+           dy = -4;
+        } else {
+           dy = 4;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y + platform.h/8*2 && y - size/2 < platform.y + platform.h/8*3)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+      
+        if (dy < 0) {
+           dy = -8;
+        } else {
+           dy = 8;
+        }   
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/8*3 && y - size/2 < platform.y + platform.h/2)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+      
+       if (dy < 0) {
+           dy = -12;
+        } else {
+           dy = 12;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      }
+      if (platform.type == 1 || platform.type == 2) {
+        platform.h -= displayHeight/6;
+      }
+    }
+    
+    for (int i = 0; i < platform2.size(); i++) {
+      platform platform = platform2.get(i); 
+      if (platform.type == 1 || platform.type == 2) {
+        platform.h += displayHeight/6;
+      }
+      if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y - platform.h/2 && y - size/2 < platform.y - platform.h/8*3)) { 
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -12;
+        } else {
+           dy = 12;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y - platform.h/8*3 && y - size/2 < platform.y - platform.h/8*2)) {  
+        if (dx < 0) {
+          dx*= -1;
+        }
+       if (dy < 0) {
+           dy = -8;
+        } else {
+           dy = 8;
+        } 
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y - platform.h/8*2 && y - size/2 < platform.y - platform.h/8)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -4;
+        } else {
+           dy = 4;
+        }
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y - platform.h/8 && y - size/2 < platform.y + platform.h/8)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -1;
+        } else {
+           dy = 1;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y + platform.h/8 && y - size/2 < platform.y + platform.h/8*2)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+       if (dy < 0) {
+           dy = -4;
+        } else {
+           dy = 4;
+        }   
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y + platform.h/8*2 && y - size/2 < platform.y + platform.h/8*3)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -8;
+        } else {
+           dy = 8;
+        } 
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x - size/2 <= platform.x + platform.w/2 && x - size/2 >= platform.x - platform.w/2 && (y + size/2 > platform.y + platform.h/8*3 && y - size/2 < platform.y + platform.h/2)) {
+        if (dx < 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -12;
+        } else {
+           dy = 12;
+        }   
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } 
+      if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/2 && y - size/2 < platform.y - platform.h/8*3)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -12;
+        } else {
+           dy = 12;
+        }
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/8*3 && y - size/2 < platform.y - platform.h/8*2)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -8;
+        } else {
+           dy = 8;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/8 && y - size/2 < platform.y + platform.h/8)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+      
+        if (dy < 0) {
+           dy = -4;
+        } else {
+           dy = 4;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/8 && y - size/2 < platform.y + platform.h/8)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+        if (dy < 0) {
+           dy = -1;
+        } else {
+           dy = 1;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y + platform.h/8 && y - size/2 < platform.y + platform.h/8*2)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+      
+        if (dy < 0) {
+           dy = -4;
+        } else {
+           dy = 4;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y + platform.h/8*2 && y - size/2 < platform.y + platform.h/8*3)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+      
+        if (dy < 0) {
+           dy = -8;
+        } else {
+           dy = 8;
+        }   
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      } else if (x + (size/2) >= platform.x-platform.w/2 &&  x <= platform.x + platform.w/2 && (y + size/2 > platform.y - platform.h/8*3 && y - size/2 < platform.y + platform.h/2)) {
+        if (dx > 0) {
+          dx*= -1;
+        }
+      
+       if (dy < 0) {
+           dy = -12;
+        } else {
+           dy = 12;
+        }  
+        bounced = true;
+         playSound(1);
+        speed *= speedChange;
+        soloscore += 1;
+      }
+      if (platform.type == 1 || platform.type == 2) {
+        platform.h -= displayHeight/6;
+      }
+    }
+    
+    speedChange = 1;
+  }
 }

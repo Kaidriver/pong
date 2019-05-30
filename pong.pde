@@ -408,12 +408,18 @@ public void draw() {
       }
     }
     pause();
+    
     for (int i = 0; i < balls.size(); i++) {
       ball ballz = balls.get(i);
       ballz.display();
-      ballz.collisions();
       ballz.move();
-      ballz.win();
+      if (crazyMode != 2) {
+        ballz.win();
+        ballz.collisions();
+      }
+      else {
+        ballz.specialCollision();
+      }
     }
     if (crazyMode == 0 && changed == true) {
       powerup();
